@@ -1,0 +1,1575 @@
+<title>Kitbash</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #ecf0ed; --grid: rgba(31, 122, 87, .075); --surface: #f6f8f6; --raised: #ffffff; --ink: #15201b; --muted: #55645c; --faint: #7a8a81; --line: #ccd6cf; --line-strong: #aebbb2;
+  --accent: #1f7a57; --accent-ink: #ffffff; --accent-soft: #d6ebe0; --danger: #b3382c; --code-bg: #eaf0ec;
+  --logic: #1f5fa8; --style: #a03f86; --markup: #a85c14; --data: #6650b8; --build: #1f7a57;
+  --shadow: 0 10px 40px rgba(14, 30, 22, .18);
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif; --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1512; --grid: rgba(79, 195, 151, .06); --surface: #141d19; --raised: #19241f; --ink: #e3ebe6; --muted: #93a59b; --faint: #6f8278; --line: #263630; --line-strong: #37493f;
+    --accent: #4fc397; --accent-ink: #06170f; --accent-soft: #163427; --danger: #ef7d70; --code-bg: #0f1814;
+    --logic: #7fb2f0; --style: #e08fcb; --markup: #eda25a; --data: #a99cf2; --build: #4fc397; --shadow: 0 10px 40px rgba(0, 0, 0, .55);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1512; --grid: rgba(79, 195, 151, .06); --surface: #141d19; --raised: #19241f; --ink: #e3ebe6; --muted: #93a59b; --faint: #6f8278; --line: #263630; --line-strong: #37493f;
+  --accent: #4fc397; --accent-ink: #06170f; --accent-soft: #163427; --danger: #ef7d70; --code-bg: #0f1814;
+  --logic: #7fb2f0; --style: #e08fcb; --markup: #eda25a; --data: #a99cf2; --build: #4fc397; --shadow: 0 10px 40px rgba(0, 0, 0, .55);
+}
+
+* { box-sizing: border-box; }
+html { color-scheme: light dark; }
+:root[data-theme="light"] { color-scheme: light; } :root[data-theme="dark"] { color-scheme: dark; }
+body { margin: 0; background-color: var(--bg); background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 28px 28px; color: var(--ink); font: 15px/1.5 var(--f-body); -webkit-text-size-adjust: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -.01em; }
+p { margin: 0; }
+code, pre, .mono { font-family: var(--f-mono); }
+
+.app { min-height: 100%; display: flex; flex-direction: column; }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 10px; }
+.mark { width: 28px; height: 28px; fill: var(--accent); } .mark .alt { fill: var(--logic); opacity: .9; }
+.wordmark { font: 800 22px/1 var(--f-display); letter-spacing: -.02em; }
+.topmeta { display: flex; align-items: center; gap: 10px; font: 500 11px/1 var(--f-mono); color: var(--muted); text-align: right; flex-wrap: wrap; justify-content: flex-end; }
+.status { display: inline-flex; align-items: center; gap: 6px; } .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
+.status.shared::before { background: var(--accent); } .status.local::before { background: var(--markup); } .status.memory::before { background: var(--danger); }
+.count { display: none; }
+
+.nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: grid; grid-template-columns: repeat(4, 1fr); background: var(--surface); border-top: 1px solid var(--line-strong); padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); }
+.nav button { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; border: 0; background: none; border-radius: 10px; color: var(--muted); font: 600 11px/1 var(--f-body); letter-spacing: .04em; text-transform: uppercase; }
+.nav svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.nav button.on { color: var(--accent); background: var(--accent-soft); }
+
+main { flex: 1; width: 100%; }
+.page { max-width: 820px; margin: 0 auto; padding: 20px 16px calc(96px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 16px; }
+.intro { display: flex; flex-direction: column; gap: 8px; }
+.intro h1 { font-size: clamp(28px, 7vw, 40px); line-height: 1.05; font-weight: 800; }
+.intro p { color: var(--muted); max-width: 62ch; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1.5px solid var(--accent); background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+.btn.ghost:hover { border-color: var(--accent); }
+.btn.small { min-height: 36px; padding: 0 12px; font-size: 13px; }
+.btn.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.link { background: none; border: 0; padding: 0; color: var(--accent); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.row { display: flex; align-items: center; gap: 12px; } .row.wrap { flex-wrap: wrap; }
+.hint { color: var(--muted); font-size: 13px; } .hint.pad { padding: 24px 16px; }
+.lbl, label { font: 600 12px/1.2 var(--f-body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+input, select, textarea { width: 100%; border: 1.5px solid var(--line-strong); background: var(--raised); border-radius: 10px; padding: 10px 12px; min-height: 44px; }
+textarea { resize: vertical; line-height: 1.45; } textarea.mono { font-size: 13px; }
+input[type="checkbox"] { width: 20px; height: 20px; min-height: 0; padding: 0; accent-color: var(--accent); flex: none; margin-top: 2px; }
+select { width: auto; min-height: 36px; padding: 4px 8px; font-size: 13px; }
+
+/* parts */
+.toolbar { display: flex; gap: 10px; align-items: center; }
+.search { flex: 1; display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--line-strong); background: var(--raised); border-radius: 10px; padding: 0 12px; min-height: 46px; text-transform: none; letter-spacing: 0; font: inherit; color: var(--ink); }
+.search:focus-within { border-color: var(--accent); }
+.search svg { width: 18px; height: 18px; fill: none; stroke: var(--muted); stroke-width: 1.8; stroke-linecap: round; flex: none; }
+.search input { border: 0; background: none; padding: 0; min-height: 0; outline: 0; flex: 1; min-width: 0; }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; } .chips::-webkit-scrollbar { display: none; }
+.chip { display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line-strong); background: var(--surface); font-size: 13px; font-weight: 500; }
+.chip i { font: 500 11px var(--f-mono); color: var(--muted); font-style: normal; }
+.chip.on { background: var(--ink); color: var(--bg); border-color: var(--ink); } .chip.on i { color: inherit; opacity: .7; } .chip:disabled { opacity: .4; }
+.listhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; font: 500 12px var(--f-mono); color: var(--muted); flex-wrap: wrap; }
+.lh-actions { display: flex; align-items: center; gap: 14px; }
+#results { display: flex; flex-direction: column; gap: 10px; }
+
+.g-logic { --k: var(--logic); } .g-style { --k: var(--style); } .g-markup { --k: var(--markup); } .g-data { --k: var(--data); } .g-build { --k: var(--build); }
+.lab { flex: none; width: 54px; padding: 8px 0; text-align: center; font: 600 11px/1 var(--f-mono); letter-spacing: .08em; color: var(--k); border-right: 1.5px dashed color-mix(in srgb, var(--k) 45%, transparent); align-self: stretch; display: flex; align-items: center; justify-content: center; }
+.part { position: relative; background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px; overflow: hidden; }
+.part.open { border-color: color-mix(in srgb, var(--k) 55%, var(--line)); background: var(--raised); }
+.part-main { display: flex; align-items: stretch; gap: 0; width: 100%; padding: 0; border: 0; background: none; text-align: left; }
+.pbody { display: flex; flex-direction: column; gap: 3px; padding: 11px 14px 11px 12px; min-width: 0; flex: 1; }
+.nm { font: 600 14px/1.25 var(--f-mono); overflow-wrap: anywhere; }
+.sm { color: var(--muted); font-size: 13.5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.part.open .sm { -webkit-line-clamp: unset; display: block; }
+.meta { font: 400 11px/1.4 var(--f-mono); color: var(--faint); overflow-wrap: anywhere; }
+.rel { position: absolute; left: 54px; right: 0; bottom: 0; height: 3px; background: transparent; } .rel i { display: block; height: 100%; background: var(--k, var(--accent)); opacity: .75; }
+.detail { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--line); padding-top: 12px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; } .tags span { font: 500 11px var(--f-mono); padding: 3px 8px; border-radius: 6px; background: var(--code-bg); color: var(--muted); }
+.builds { font-size: 13px; color: var(--muted); }
+.code { margin: 0; padding: 12px 14px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px; font-size: 12.5px; line-height: 1.55; overflow: auto; max-height: 340px; tab-size: 2; }
+.code.big { max-height: 60vh; min-height: 200px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.empty { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 28px 20px; border: 1.5px dashed var(--line-strong); border-radius: 14px; background: var(--surface); }
+.empty h2 { font-size: 22px; } .empty p { color: var(--muted); max-width: 46ch; }
+
+/* import */
+.intake { display: flex; flex-direction: column; gap: 12px; }
+.seg { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; align-self: flex-start; border: 1.5px solid var(--line-strong); border-radius: 10px; overflow: hidden; background: var(--surface); width: min(100%, 360px); }
+.seg button { min-height: 40px; border: 0; background: none; font-weight: 600; font-size: 14px; color: var(--muted); } .seg button + button { border-left: 1.5px solid var(--line-strong); }
+.seg button.on { background: var(--ink); color: var(--bg); } .seg.small { width: min(100%, 300px); } .seg.small button { min-height: 36px; font-size: 13px; }
+.drop { display: flex; flex-direction: column; gap: 4px; align-items: center; text-align: center; padding: 26px 16px; border: 2px dashed var(--line-strong); border-radius: 14px; background: var(--surface); cursor: pointer; text-transform: none; letter-spacing: 0; color: var(--ink); }
+.drop strong { font: 700 18px var(--f-display); } .drop span { color: var(--muted); font-size: 13px; font-weight: 400; }
+.drop:hover, .drop.over { border-color: var(--accent); background: var(--accent-soft); }
+.paste { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; } .paste input, .paste textarea { width: 100%; }
+.busy { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); font-size: 14px; }
+.busy i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--accent); animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#ws { display: flex; flex-direction: column; gap: 16px; }
+.next { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: 12px; background: var(--accent-soft); border: 1.5px solid var(--accent); }
+.proj { display: flex; flex-direction: column; gap: 12px; padding: 16px; background: var(--surface); border: 1.5px solid var(--line-strong); border-radius: 16px; }
+.proj-head h2 { font-size: 24px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } .proj-head p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.pill { font: 600 10px var(--f-mono); letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; border: 1.5px solid var(--accent); color: var(--accent); margin-left: 8px; vertical-align: middle; }
+.tree summary, .file summary { cursor: pointer; font: 600 13px var(--f-body); color: var(--muted); padding: 4px 0; }
+.tree pre { margin: 8px 0 0; padding: 12px 14px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px; font-size: 12px; line-height: 1.6; overflow-x: auto; }
+.proj-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.file { border-top: 1px solid var(--line); padding-top: 6px; } .file summary { display: flex; justify-content: space-between; gap: 10px; color: var(--ink); }
+.fp { font: 500 13px var(--f-mono); overflow-wrap: anywhere; } .file summary i { font: 500 11px var(--f-mono); font-style: normal; color: var(--muted); }
+.cand { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; text-transform: none; letter-spacing: 0; font: inherit; color: var(--ink); cursor: pointer; position: relative; }
+.cand .lab { width: 46px; padding: 2px 0; align-self: flex-start; border-right: 0; font-size: 10.5px; text-align: left; justify-content: flex-start; }
+.cbody { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; } .cbody b { font: 600 13.5px/1.3 var(--f-mono); overflow-wrap: anywhere; }
+.cbody span { color: var(--muted); font-size: 13px; } .cbody em { font: normal 400 11px var(--f-mono); color: var(--faint); }
+.plan { display: flex; flex-direction: column; padding: 4px 14px; background: var(--surface); border: 1.5px solid var(--line-strong); border-radius: 14px; }
+.plan .cand + .cand { border-top: 1px solid var(--line); }
+.plan .rel { left: 0; right: 0; bottom: 0; height: 2px; }
+.planhead { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 8px; } .planhead h2 { font-size: 22px; } .planhead span { font: 500 12px var(--f-mono); color: var(--muted); }
+.deps { font-size: 13px; color: var(--muted); }
+.resbody { border: 1.5px solid var(--line-strong); border-radius: 14px; overflow: hidden; background: var(--raised); }
+#pv { display: block; width: 100%; height: min(70vh, 520px); border: 0; background: #fff; }
+.resbody .code { border: 0; border-radius: 0; }
+.notes { margin: 0; padding: 14px 16px 14px 34px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+
+/* sheet + toast */
+.sheet { position: fixed; inset: 0; z-index: 50; background: rgba(6, 14, 10, .55); display: flex; align-items: flex-end; justify-content: center; }
+.sheet[hidden] { display: none; }
+.sheet-card { width: 100%; max-width: 620px; max-height: 92%; overflow-y: auto; background: var(--raised); border-radius: 18px 18px 0 0; padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow); }
+@media (min-width: 700px) { .sheet { align-items: center; } .sheet-card { border-radius: 18px; } }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; } .sheet-head h2 { font-size: 22px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .two > div { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.sheet-foot { margin-top: 8px; display: flex; }
+#toast { position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 12px); max-width: min(92vw, 460px); background: var(--ink); color: var(--bg); padding: 11px 16px; border-radius: 10px; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 60; }
+#toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+@media (min-width: 900px) {
+  .app { display: grid; grid-template-columns: 200px 1fr; grid-template-rows: auto 1fr; min-height: 100vh; }
+  .top { grid-column: 1 / -1; padding: 14px 28px; } .count { display: inline; }
+  .nav { position: sticky; top: 64px; align-self: start; grid-row: 2; grid-template-columns: 1fr; gap: 4px; margin: 20px 0 0 20px; border: 1.5px solid var(--line); border-radius: 14px; padding: 8px; height: fit-content; }
+  .nav button { flex-direction: row; gap: 10px; padding: 11px 12px; font-size: 12px; justify-content: flex-start; }
+  #view { grid-row: 2; } .page { padding-bottom: 56px; } #toast { bottom: 28px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media (max-width: 420px) { .two { grid-template-columns: 1fr; } .proj { padding: 14px; } }
+
+/* ===== Team tab ===== */
+.team { gap: 14px; }
+.thead { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.keyrow { display: flex; gap: 8px; margin-top: 10px; } .keyrow input { flex: 1; min-width: 0; }
+.subnav { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; } .subnav::-webkit-scrollbar { display: none; }
+.tchip { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 999px; border: 1.5px solid var(--line-strong); background: var(--surface); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.tchip.ok, .tchip.st-done, .tchip.st-approved { border-color: var(--accent); color: var(--accent); } .tchip.bad, .tchip.st-blocked, .tchip.st-rejected { border-color: var(--danger); color: var(--danger); }
+.tchip.st-in_progress, .tchip.st-review, .tchip.st-pending { border-color: var(--markup); color: var(--markup); }
+.tlog { display: flex; flex-direction: column; gap: 8px; max-height: 52vh; overflow-y: auto; padding: 4px 2px; }
+.msg { border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 9px 12px; max-width: 92%; align-self: flex-start; }
+.msg.from-owner { align-self: flex-end; background: var(--accent-soft); border-color: var(--accent); }
+.msg.k-system, .msg.k-handoff { align-self: center; background: transparent; border-style: dashed; font-size: 13px; color: var(--muted); }
+.msg .mh { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12px; color: var(--muted); } .msg .mh b { color: var(--ink); }
+.msg .mb { white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 2px; }
+.composer { display: flex; flex-direction: column; gap: 8px; } .tolab { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 180px; } .tolab select { flex: 1; }
+.tcard, .tnew, .fview { border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.tcard .meta, .frow .meta { color: var(--muted); font-size: 12px; }
+.tcard select { width: auto; min-height: 36px; padding: 4px 10px; }
+.frow { display: flex; flex-direction: column; gap: 2px; text-align: left; padding: 10px 12px; border: 1.5px solid var(--line); background: var(--surface); border-radius: 10px; } .frow.on { border-color: var(--accent); }
+.frow .fp { font: 500 13px var(--f-mono); overflow-wrap: anywhere; }
+.team pre { margin: 0; padding: 10px; background: var(--code-bg); border-radius: 8px; overflow: auto; max-height: 260px; font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.filebtn { cursor: pointer; } .steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.team code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+</style>
+<div id="root"></div>
+<script>
+/* ================= utilities ================= */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 48) || 'x';
+const hash = s => { let h = 5381; s = String(s); for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36).slice(0, 6); };
+const humanize = name => String(name).replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/[_\-.\s]+/g, ' ').trim().toLowerCase();
+const sentence = s => { s = String(s).replace(/\s+/g, ' ').trim(); return s ? s[0].toUpperCase() + s.slice(1) : s; };
+const baseName = p => p.split('/').pop();
+const lineAt = (src, idx) => { let n = 1; for (let i = 0; i < idx; i++) if (src.charCodeAt(i) === 10) n++; return n; };
+const MAX_CODE = 40000;
+
+const IGNORE_DIR = /(^|\/)(node_modules|\.git|dist|build|\.next|\.cache|coverage|vendor|__pycache__|\.venv|\.idea|\.vscode)(\/|$)/;
+const EXT_LANG = { js: 'js', mjs: 'js', cjs: 'js', jsx: 'js', ts: 'js', tsx: 'js', css: 'css', scss: 'css', less: 'css', html: 'html', htm: 'html', py: 'py', glsl: 'glsl', frag: 'glsl', vert: 'glsl', wgsl: 'glsl', svg: 'svg', md: 'md', json: 'json' };
+const fileLang = p => { const m = /\.([a-z0-9]+)$/i.exec(p); return m ? EXT_LANG[m[1].toLowerCase()] || null : null; };
+
+const FEATURES = [
+  [/getContext\(\s*['"]2d/, 'canvas'], [/getContext\(\s*['"]webgl/, 'webgl'], [/\bTHREE\b|from\s+['"]three/, 'three'],
+  [/\buse(State|Effect|Ref|Memo|Callback)\b/, 'react'], [/requestAnimationFrame/, 'animation'], [/\bfetch\(/, 'network'],
+  [/AudioContext|new Audio\(/, 'audio'], [/localStorage|indexedDB/, 'storage'], [/addEventListener|onclick|onClick/, 'events'],
+  [/document\.|querySelector|getElementById/, 'dom'], [/Math\.random/, 'random'], [/var\(--/, 'theme'],
+  [/@keyframes|animation\s*:/, 'animation'], [/@media/, 'responsive'], [/grid-template|display:\s*grid/, 'grid'],
+  [/display:\s*flex/, 'flex'], [/Math\.(sin|cos|atan2|sqrt|hypot)/, 'math'], [/\basync\b|\bawait\b|Promise/, 'async']
+];
+const featureTags = code => [...new Set(FEATURES.filter(([re]) => re.test(code)).map(f => f[1]))];
+
+/* ================= JS statement scanner ================= */
+function scanJS(src) {
+  const n = src.length; let i = 0, depth = 0, start = -1, last = '', last2 = ''; const out = [];
+  const skipStr = q => { i++; while (i < n && src[i] !== q && src[i] !== '\n') { if (src[i] === '\\') i++; i++; } i++; };
+  const skipTpl = () => {
+    i++;
+    while (i < n && src[i] !== '`') {
+      if (src[i] === '\\') i += 2;
+      else if (src[i] === '$' && src[i + 1] === '{') {
+        i += 2; let d = 1;
+        while (i < n && d) { const c = src[i]; if (c === '{') d++; else if (c === '}') d--; else if (c === '`') { skipTpl(); continue; } else if (c === '"' || c === "'") { skipStr(c); continue; } i++; }
+      } else i++;
+    }
+    i++;
+  };
+  const push = (a, b) => { if (b > a) out.push({ start: a, end: b }); };
+  const nextChar = () => { let j = i; while (j < n && /\s/.test(src[j])) j++; return src[j] || ''; };
+  const nextWord = () => (/^\s*([A-Za-z]+)/.exec(src.slice(i, i + 40)) || [])[1] || '';
+  while (i < n) {
+    const c = src[i];
+    if (c === '/' && src[i + 1] === '/') { while (i < n && src[i] !== '\n') i++; continue; }
+    if (c === '/' && src[i + 1] === '*') { const e = src.indexOf('*/', i + 2); i = e < 0 ? n : e + 2; continue; }
+    if (c === '"' || c === "'") { if (start < 0) start = i; skipStr(c); last = '"'; last2 = ''; continue; }
+    if (c === '`') { if (start < 0) start = i; skipTpl(); last = '"'; last2 = ''; continue; }
+    if (c === '/' && (last === '' || /[(,=:[!&|?{};]/.test(last))) {
+      if (start < 0) start = i;
+      i++; let cls = false;
+      while (i < n && src[i] !== '\n' && (src[i] !== '/' || cls)) { if (src[i] === '\\') i++; else if (src[i] === '[') cls = true; else if (src[i] === ']') cls = false; i++; }
+      i++; last = '"'; last2 = ''; continue;
+    }
+    if (/\s/.test(c)) {
+      if (c === '\n' && depth === 0 && start >= 0) {
+        const nc = nextChar();
+        const cont = /[=,+*/%&|?:<([!~^-]/.test(last) || last2 === '=>' || /[.?:+*/%&|,)\]]/.test(nc);
+        if (!cont && !/^(else|catch|finally)$/.test(nextWord())) { push(start, i); start = -1; last = ''; }
+      }
+      i++; continue;
+    }
+    if (start < 0) start = i;
+    if (c === '(' || c === '{' || c === '[') depth++;
+    else if (c === ')' || c === '}' || c === ']') { depth = Math.max(0, depth - 1); }
+    else if (c === ';' && depth === 0) { i++; push(start, i); start = -1; last = ''; last2 = ''; continue; }
+    last2 = last + c; last = c; i++;
+    if (c === '}' && depth === 0) {
+      const head = src.slice(start, start + 120);
+      if (/^(export\s+)?(default\s+)?(async\s+)?(function|class)\b|^(if|for|while|switch|try|do)\b|^(export\s+)?(interface|enum|namespace)\b/.test(head)) {
+        const nw = nextWord(), nc = nextChar();
+        if (!/^(else|catch|finally|while)$/.test(nw) && !/[,.)]/.test(nc)) { push(start, i); start = -1; last = ''; last2 = ''; }
+      }
+    }
+  }
+  if (start >= 0) push(start, n);
+  return out;
+}
+
+function leadingComment(src, idx) {
+  const before = src.slice(0, idx).replace(/[ \t]*$/, '');
+  const t = before.replace(/\s+$/, '');
+  if (t.endsWith('*/')) {
+    const s = t.lastIndexOf('/*');
+    if (s >= 0 && /^\s*$/.test(before.slice(t.length))) return { text: t.slice(s), start: s };
+  }
+  const lines = t.split('\n'); const got = []; let pos = t.length;
+  for (let k = lines.length - 1; k >= 0; k--) {
+    if (/^\s*\/\//.test(lines[k]) && before.slice(t.length).split('\n').length <= 2) { got.unshift(lines[k]); pos -= lines[k].length + 1; } else break;
+  }
+  if (got.length) return { text: got.join('\n'), start: Math.max(0, pos + 1) };
+  return null;
+}
+const docSummary = c => {
+  if (!c) return '';
+  const t = c.replace(/^\/\*+|\*+\/$/g, '').replace(/^\s*(\*|\/\/+)\s?/gm, '').replace(/@\w+.*$/gm, '').trim();
+  return sentence(t.split(/\n\s*\n|(?<=[.!?])\s/)[0] || '').slice(0, 220);
+};
+
+const IDENT = /[A-Za-z_$][\w$]*/g;
+const JSX_RE = /(return\s*\(?\s*<|=>\s*\(?\s*<|React\.createElement|<>\s*<)/;
+
+function jsDeclarations(src) {
+  const decls = [], loose = [], imports = [];
+  for (const st of scanJS(src)) {
+    const text = src.slice(st.start, st.end); const head = text.slice(0, 500); let m;
+    if (/^import\b/.test(head)) { const s = /from\s*['"]([^'"]+)['"]|^import\s*['"]([^'"]+)['"]/.exec(head); if (s) imports.push(s[1] || s[2]); continue; }
+    if (/^export\s*(\{|\*)/.test(head)) continue;
+    const h2 = head.replace(/^export\s+(default\s+)?/, '');
+    let name = null, type = null;
+    if ((m = /^(?:async\s+)?function\s*\*?\s*([\w$]+)/.exec(h2))) { name = m[1]; type = 'function'; }
+    else if ((m = /^class\s+([\w$]+)/.exec(h2))) { name = m[1]; type = 'class'; }
+    else if ((m = /^(interface|type|enum)\s+([\w$]+)/.exec(h2))) { name = m[2]; type = 'type'; }
+    else if ((m = /^(?:const|let|var)\s+([\w$]+)\s*(?::[^=]{0,80})?=\s*([\s\S]*)/.exec(h2))) {
+      name = m[1]; const rhs = m[2];
+      const arrow = /^(async\s*)?(\(|[\w$]+\s*=>)/.test(rhs) && /=>/.test(rhs.slice(0, 320));
+      if (arrow || /^(async\s+)?function\b/.test(rhs) || /^(React\.)?(memo|forwardRef)\(/.test(rhs)) type = 'function';
+      else {
+        const lines = text.split('\n').length;
+        if (/^([[{`]|new\s|Object\.)/.test(rhs) && ((text.length >= 140 && lines >= 3) || (/^[A-Z][A-Z0-9_]+$/.test(name) && text.length >= 40))) type = 'value';
+      }
+    }
+    if (!type) { loose.push(st); continue; }
+    if (text.length > MAX_CODE) continue;
+    const cm = leadingComment(src, st.start);
+    const clean = text.replace(/^export\s+(default\s+)?(?=(async\s+)?function|class|const|let|var|interface|type|enum)/, '');
+    decls.push({ name, type, start: st.start, code: (cm ? cm.text + '\n' : '') + clean, comment: cm && cm.text, line: lineAt(src, st.start), raw: text });
+  }
+  return { decls, loose, imports };
+}
+
+function paramsOf(code) {
+  let m = /^[^(=]*\(([^)]*)\)/.exec(code.replace(/^(\/\*[\s\S]*?\*\/|\/\/.*\n)+/, '').replace(/^\s*(?:const|let|var)\s+[\w$]+\s*=\s*(?:async\s*)?/, ''));
+  return m ? m[1].replace(/\s+/g, ' ').trim().slice(0, 70) : '';
+}
+
+/* ================= per-language extractors ================= */
+function mkSkill(ctx, o) {
+  const code = o.code.length > MAX_CODE ? o.code.slice(0, MAX_CODE) : o.code;
+  const id = `${o.kind}-${slug(o.name).slice(0, 28)}-${hash(ctx.project + '|' + ctx.path + '|' + o.name + '|' + o.kind)}`;
+  return {
+    id, name: o.name, kind: o.kind, lang: o.lang, summary: o.summary || '', tags: [...new Set(o.tags || [])].slice(0, 12), code,
+    project: ctx.project, path: ctx.path, line: o.line || 1, provides: o.provides || [], requires: o.requires || [], uses: [], pkgs: o.pkgs || [],
+    hits: 0, created: Date.now(), origin: 'extracted'
+  };
+}
+
+function extractJS(src, ctx, pathLabel) {
+  const out = []; const { decls, loose, imports } = jsDeclarations(src);
+  const pkgs = [...new Set(imports.filter(x => !/^[./]/.test(x)).map(x => x.replace(/^(@[^/]+\/[^/]+|[^/]+).*/, '$1')))];
+  for (const d of decls) {
+    let kind = 'fn';
+    if (d.type === 'class') kind = 'class';
+    else if (d.type === 'type') kind = 'type';
+    else if (d.type === 'value') kind = /void\s+main\s*\(/.test(d.code) ? 'shader' : 'data';
+    else if (/^[A-Z]/.test(d.name) && JSX_RE.test(d.code)) kind = 'component';
+    const doc = docSummary(d.comment);
+    const params = kind === 'fn' || kind === 'component' ? paramsOf(d.code) : '';
+    let summary = doc;
+    if (!summary) {
+      if (kind === 'fn') summary = `${sentence(humanize(d.name))} — function ${d.name}(${params}).`;
+      else if (kind === 'component') summary = `${d.name} UI component${params ? ` taking ${params}` : ''}.`;
+      else if (kind === 'class') summary = `Class ${d.name}${(/extends\s+([\w$.]+)/.exec(d.code) || [])[1] ? ` extending ${RegExp.$1}` : ''}.`;
+      else if (kind === 'shader') summary = `GLSL shader source stored in ${d.name}.`;
+      else if (kind === 'type') summary = `Type definition ${d.name}.`;
+      else summary = `Constant ${d.name} (${/^\s*\[/.test(d.code.replace(/^[\s\S]*?=\s*/, '')) ? 'list' : 'object'}, ${d.code.split('\n').length} lines).`;
+    }
+    const tags = [...humanize(d.name).split(' '), kind, ...featureTags(d.code), ...pkgs];
+    if (/^use[A-Z]/.test(d.name)) tags.push('hook');
+    const s = mkSkill(ctx, { name: d.name, kind, lang: 'js', summary, tags, code: d.code, line: d.line, provides: [d.name], pkgs });
+    s.requires = idents(d.code, d.name).concat(domRefs(d.code));
+    out.push(s);
+  }
+  const looseCode = loose.map(l => src.slice(l.start, l.end)).join('\n').trim();
+  if (looseCode.length >= 50) {
+    const label = pathLabel || baseName(ctx.path);
+    const s = mkSkill(ctx, {
+      name: `${label} · setup`, kind: 'entry', lang: 'js', line: lineAt(src, loose[0].start), pkgs,
+      summary: `Wiring code from ${label}: ${looseCode.split('\n').length} lines that set things up and start them running.`,
+      tags: ['entry', 'setup', 'main', ...featureTags(looseCode), ...pkgs], code: looseCode
+    });
+    s.requires = idents(looseCode, '').concat(domRefs(looseCode));
+    out.push(s);
+  }
+  return out;
+}
+const idents = (code, self) => [...new Set((code.match(IDENT) || []).filter(x => x.length >= 3 && x !== self))];
+const domRefs = code => {
+  const r = [];
+  for (const m of code.matchAll(/getElementById\(\s*['"]([^'"]+)['"]/g)) r.push('#' + m[1]);
+  for (const m of code.matchAll(/querySelector(?:All)?\(\s*['"]([^'"]+)['"]/g)) for (const t of m[1].match(/[#.][A-Za-z_][\w-]*/g) || []) r.push(t);
+  return r;
+};
+
+/* ---- CSS ---- */
+function scanCSS(src) {
+  const out = []; let i = 0; const n = src.length;
+  while (i < n) {
+    let comment = '';
+    for (; ;) {
+      while (i < n && /\s/.test(src[i])) i++;
+      if (src.startsWith('/*', i)) { const e = src.indexOf('*/', i + 2); const end = e < 0 ? n : e + 2; comment = src.slice(i, end); i = end; } else break;
+    }
+    if (i >= n) break;
+    const start = i; let depth = 0, bodyStart = -1;
+    while (i < n) {
+      const c = src[i];
+      if (c === '"' || c === "'") { const q = c; i++; while (i < n && src[i] !== q && src[i] !== '\n') { if (src[i] === '\\') i++; i++; } i++; continue; }
+      if (c === '/' && src[i + 1] === '*') { const e = src.indexOf('*/', i + 2); i = e < 0 ? n : e + 2; continue; }
+      if (c === '{') { if (depth === 0) bodyStart = i; depth++; }
+      else if (c === '}') { depth--; if (depth <= 0) { i++; break; } }
+      else if (c === ';' && depth === 0) { i++; break; }
+      i++;
+    }
+    const text = src.slice(start, i);
+    if (bodyStart >= 0) out.push({ prelude: src.slice(start, bodyStart).trim(), body: src.slice(bodyStart + 1, Math.max(bodyStart + 1, i - 1)), text, start, comment });
+    else out.push({ prelude: text.trim(), body: '', text, start, comment, stmt: true });
+  }
+  return out;
+}
+const cssClasses = t => [...new Set([...t.replace(/url\([^)]*\)|"[^"]*"|'[^']*'/g, '').matchAll(/\.([A-Za-z_][\w-]*)/g)].map(m => '.' + m[1]))];
+
+function extractCSS(src, ctx, label) {
+  const rules = scanCSS(src).filter(r => !r.stmt);
+  const tokens = [], fonts = [], kf = [], groups = new Map(); const out = [];
+  const withDoc = r => (r.comment ? r.comment + '\n' : '') + r.text;
+  for (const r of rules) {
+    const p = r.prelude;
+    if (/^@(-webkit-)?keyframes/.test(p)) { kf.push(r); continue; }
+    if (/^@font-face/.test(p)) { fonts.push(r); continue; }
+    if ((/:root|\[data-theme|^html/.test(p) || (p.startsWith('@media') && /:root/.test(r.body))) && /--[\w-]+\s*:/.test(r.text)) { tokens.push(r); continue; }
+    const m = /\.([\w-]+)/.exec(p.startsWith('@') ? r.body : p);
+    const key = m ? m[1].split(/__|--|-|_/)[0] : 'base';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(r);
+  }
+  const at = r => lineAt(src, r.start);
+  if (tokens.length) {
+    const code = tokens.map(withDoc).join('\n\n'); const vars = [...new Set([...code.matchAll(/(--[\w-]+)\s*:/g)].map(x => x[1]))];
+    const s = mkSkill(ctx, { name: `${label} design tokens`, kind: 'tokens', lang: 'css', code, line: at(tokens[0]), provides: vars,
+      summary: `Design tokens: ${vars.length} CSS variables (${vars.slice(0, 5).join(', ')}${vars.length > 5 ? ', …' : ''}).`, tags: ['tokens', 'theme', 'palette', 'variables', 'color', ...featureTags(code)] });
+    out.push(s);
+  }
+  for (const r of kf) {
+    const name = p2(r.prelude); const s = mkSkill(ctx, { name: `@keyframes ${name}`, kind: 'keyframes', lang: 'css', code: withDoc(r), line: at(r), provides: ['@' + name],
+      summary: `Keyframe animation "${name}".`, tags: ['animation', 'keyframes', ...humanize(name).split(' ')] });
+    out.push(s);
+  }
+  if (fonts.length) out.push(mkSkill(ctx, { name: `${label} font faces`, kind: 'css', lang: 'css', code: fonts.map(withDoc).join('\n\n'), line: at(fonts[0]), summary: `${fonts.length} @font-face declaration(s).`, tags: ['fonts', 'typography'] }));
+  for (const [key, rs] of groups) {
+    const code = rs.map(withDoc).join('\n\n'); if (code.length < 30) continue;
+    const props = {}; for (const m of code.matchAll(/([a-z-]+)\s*:/g)) props[m[1]] = (props[m[1]] || 0) + 1;
+    const top = Object.entries(props).sort((a, b) => b[1] - a[1]).slice(0, 4).map(x => x[0]);
+    const doc = docSummary(rs[0].comment);
+    const s = mkSkill(ctx, { name: key === 'base' ? `${label} base styles` : `.${key} styles`, kind: 'css', lang: 'css', code, line: at(rs[0]),
+      provides: cssClasses(rs.map(r => r.prelude.startsWith('@') ? r.body : r.prelude).join(',')),
+      summary: (doc ? doc + ' ' : '') + `${rs.length} rule${rs.length > 1 ? 's' : ''}${top.length ? ` — mostly ${top.join(', ')}` : ''}.`,
+      tags: [key, 'css', 'style', ...featureTags(code)] });
+    s.requires = [...new Set([...code.matchAll(/var\(\s*(--[\w-]+)/g)].map(x => x[1]))];
+    for (const m of code.matchAll(/animation(?:-name)?\s*:\s*([^;}]+)/g)) for (const w of m[1].split(/[\s,]+/)) if (/^[A-Za-z_][\w-]*$/.test(w)) s.requires.push('@' + w);
+    out.push(s);
+  }
+  return out;
+}
+const p2 = prelude => prelude.replace(/^@(-webkit-)?keyframes\s+/, '').trim();
+
+/* ---- HTML ---- */
+function extractHTML(src, ctx) {
+  const out = []; const label = baseName(ctx.path);
+  let doc; try { doc = new DOMParser().parseFromString(src, 'text/html'); } catch { return out; }
+  const styles = [...doc.querySelectorAll('style')].map(s => s.textContent).join('\n');
+  if (styles.trim()) out.push(...extractCSS(styles, ctx, label));
+  let si = 0;
+  for (const sc of doc.querySelectorAll('script:not([src])')) {
+    const t = (sc.getAttribute('type') || '').toLowerCase();
+    if (/json|importmap/.test(t) || !sc.textContent.trim()) continue;
+    si++; out.push(...extractJS(sc.textContent, ctx, si > 1 ? `${label} script ${si}` : `${label} inline`));
+  }
+  for (const sv of doc.querySelectorAll('svg')) {
+    if (sv.parentElement && sv.parentElement.closest('svg')) continue;
+    const html = sv.outerHTML; if (html.length < 80 || html.length > MAX_CODE) continue;
+    const id = sv.getAttribute('id') || sv.getAttribute('class') || `graphic ${out.filter(x => x.kind === 'svg').length + 1}`;
+    out.push(mkSkill(ctx, { name: `svg ${id}`, kind: 'svg', lang: 'html', code: html, summary: `Inline SVG (${sv.getAttribute('viewBox') || 'no viewBox'}, ${sv.querySelectorAll('*').length} shapes).`, tags: ['svg', 'graphic', 'icon'], provides: sv.id ? ['#' + sv.id] : [] }));
+  }
+  const SEM = /^(HEADER|NAV|MAIN|SECTION|FOOTER|FORM|DIALOG|ASIDE|TEMPLATE|ARTICLE)$/;
+  let order = 0;
+  for (const el of [...doc.body.children]) {
+    if (/^(SCRIPT|STYLE|SVG|LINK|NOSCRIPT)$/i.test(el.tagName)) continue;
+    order++;
+    if (!(el.id || el.className || SEM.test(el.tagName))) continue;
+    const html = el.outerHTML; if (html.length < 20 || html.length > MAX_CODE) continue;
+    const cls = (typeof el.className === 'string' ? el.className : '').split(/\s+/).filter(Boolean);
+    const nm = el.id ? `#${el.id}` : cls.length ? `.${cls[0]}` : el.tagName.toLowerCase();
+    const s = mkSkill(ctx, { name: `${nm} markup`, kind: 'html', lang: 'html', code: html, line: order, summary: `<${el.tagName.toLowerCase()}> fragment with ${el.querySelectorAll('*').length} nested elements${el.textContent.trim() ? ` — “${el.textContent.trim().replace(/\s+/g, ' ').slice(0, 50)}”` : ''}.`,
+      tags: ['html', 'markup', el.tagName.toLowerCase(), ...cls, el.id].filter(Boolean), provides: [...new Set([...el.querySelectorAll('[id]')].map(x => '#' + x.id).concat(el.id ? ['#' + el.id] : []))] });
+    s.requires = [...new Set([el, ...el.querySelectorAll('[class]')].flatMap(x => (typeof x.className === 'string' ? x.className : '').split(/\s+/).filter(Boolean)).map(c => '.' + c))];
+    out.push(s);
+  }
+  return out;
+}
+
+/* ---- Python ---- */
+function extractPy(src, ctx) {
+  const lines = src.split('\n'); const out = []; let i = 0;
+  while (i < lines.length) {
+    const m = /^(async\s+def|def|class)\s+(\w+)/.exec(lines[i]);
+    if (!m) { i++; continue; }
+    let s = i; while (s > 0 && /^@/.test(lines[s - 1])) s--;
+    let e = i + 1; while (e < lines.length && (lines[e].trim() === '' || /^\s/.test(lines[e]) || /^[)\]}]/.test(lines[e]))) e++;
+    while (e > i + 1 && lines[e - 1].trim() === '') e--;
+    const code = lines.slice(s, e).join('\n'); const isClass = m[1] === 'class';
+    const doc = (/^\s+(?:"""|''')([\s\S]*?)(?:"""|''')/m.exec(lines.slice(i + 1, e).join('\n')) || [])[1];
+    const params = (/\(([^)]*)\)/.exec(lines[i]) || [])[1] || '';
+    out.push(mkSkill(ctx, { name: m[2], kind: isClass ? 'class' : 'fn', lang: 'py', code, line: i + 1, provides: [m[2]],
+      summary: doc ? sentence(doc.trim().split(/\n\s*\n|(?<=[.!?])\s/)[0]).slice(0, 200) : `${sentence(humanize(m[2]))} — Python ${isClass ? 'class' : 'function'} ${m[2]}(${params.trim().slice(0, 60)}).`,
+      tags: [...humanize(m[2]).split(' '), 'python', isClass ? 'class' : 'fn'] }));
+    out[out.length - 1].requires = idents(code, m[2]);
+    i = e;
+  }
+  return out;
+}
+
+function extractOther(lang, src, ctx) {
+  const label = baseName(ctx.path);
+  if (lang === 'glsl') return [mkSkill(ctx, { name: label, kind: 'shader', lang: 'glsl', code: src.slice(0, MAX_CODE), summary: `Shader file ${label} (${src.split('\n').length} lines).`, tags: ['shader', 'glsl', 'gpu', 'webgl'] })];
+  if (lang === 'svg') return src.length >= 80 ? [mkSkill(ctx, { name: `svg ${label}`, kind: 'svg', lang: 'html', code: src.slice(0, MAX_CODE), summary: `SVG file ${label}.`, tags: ['svg', 'graphic', 'icon'] })] : [];
+  if (lang === 'json' && /(^|\/)package\.json$/.test(ctx.path)) {
+    try {
+      const j = JSON.parse(src); const deps = Object.keys({ ...j.dependencies, ...j.devDependencies });
+      return [mkSkill(ctx, { name: `${j.name || ctx.project} stack`, kind: 'data', lang: 'json', code: JSON.stringify({ name: j.name, scripts: j.scripts, dependencies: j.dependencies, devDependencies: j.devDependencies }, null, 2),
+        summary: `Stack: ${deps.slice(0, 8).join(', ')}${deps.length > 8 ? ', …' : ''}.`, tags: ['package', 'dependencies', 'stack', ...deps] })];
+    } catch { return []; }
+  }
+  if (lang === 'md') {
+    const fm = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/.exec(src);
+    if (fm && /^name:/m.test(fm[1]) && /^description:/m.test(fm[1])) {
+      const get = k => ((new RegExp('^' + k + ':\\s*(.*)$', 'm').exec(fm[1]) || [])[1] || '').replace(/^["']|["']$/g, '').trim();
+      const nm = get('name');
+      return [mkSkill(ctx, { name: nm, kind: 'skill', lang: 'md', code: src.slice(0, MAX_CODE), summary: sentence(get('description')).slice(0, 300), tags: ['skill', 'instructions', ...humanize(nm).split(' ')] })];
+    }
+  }
+  return [];
+}
+
+/* ================= project pipeline ================= */
+function extractFile(project, path, text) {
+  const lang = fileLang(path); const ctx = { project, path }; let out = [];
+  try {
+    if (lang === 'js') out = extractJS(text, ctx);
+    else if (lang === 'css') out = extractCSS(text, ctx, baseName(path));
+    else if (lang === 'html') out = extractHTML(text, ctx);
+    else if (lang === 'py') out = extractPy(text, ctx);
+    else if (lang) out = extractOther(lang, text, ctx);
+  } catch (e) { console.warn('extract failed', path, e); }
+  for (const s of out) s.path = path;
+  return out;
+}
+
+function linkProject(skills) {
+  const owners = new Map();
+  for (const s of skills) for (const p of s.provides) { if (!owners.has(p)) owners.set(p, []); owners.get(p).push(s); }
+  for (const s of skills) {
+    const uses = new Set();
+    for (const r of s.requires) for (const o of owners.get(r) || []) if (o.id !== s.id) uses.add(o.id);
+    s.uses = [...uses];
+  }
+  return skills;
+}
+
+function extractProject(project, files) {
+  const skills = [];
+  for (const f of files) skills.push(...extractFile(project, f.path, f.text));
+  const seen = new Set(); const uniq = skills.filter(s => (seen.has(s.id) ? false : seen.add(s.id)));
+  return linkProject(uniq);
+}
+
+/* ================= .skill formatting ================= */
+const LANG_FENCE = { js: 'js', css: 'css', html: 'html', py: 'python', glsl: 'glsl', json: 'json', md: 'md' };
+function skillMd(s, byId) {
+  const desc = (s.summary + (s.tags.length ? ` Use when working with: ${s.tags.slice(0, 8).join(', ')}.` : '')).replace(/[<>]/g, '').replace(/\s+/g, ' ').slice(0, 900);
+  const uses = (s.uses || []).map(id => byId && byId[id] ? byId[id].name : null).filter(Boolean);
+  return `---\nname: ${slug(s.name)}\ndescription: ${desc}\n---\n\n# ${s.name}\n\n${s.summary}\n\n- Kind: ${s.kind} (${s.lang})\n${s.path ? `- Source: ${s.project}/${s.path}:${s.line}\n` : ''}${uses.length ? `- Builds on: ${uses.join(', ')}\n` : ''}\n## Code\n\n\`\`\`${LANG_FENCE[s.lang] || ''}\n${s.code}\n\`\`\`\n`;
+}
+/* ================= recall (search) ================= */
+const STOP = new Set('a an the of to and or for in on with by from is are be as at it this that into my your our its using use make build create want need like some simple small new'.split(' '));
+const stem = t => (t.length > 4 ? t.replace(/(ing|ed|es|s)$/, m => (t.length - m.length >= 3 ? '' : m)) : t);
+const tok = s => (String(s).replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase().match(/[a-z0-9]+/g) || []).map(stem).filter(t => t.length > 1 && !STOP.has(t));
+const SYN = {
+  anim: ['loop', 'frame', 'tick', 'keyframe'], animat: ['loop', 'frame', 'tick', 'keyframe'], background: ['bg', 'theme', 'stage'], color: ['palette', 'token', 'theme'], colour: ['palette', 'token', 'theme'],
+  theme: ['token', 'palette'], chart: ['plot', 'graph', 'canvas'], random: ['rand'], sound: ['audio'], music: ['audio'], game: ['loop', 'canvas', 'entity'], menu: ['nav'], popup: ['modal', 'dialog'],
+  save: ['storage', 'persist'], glow: ['pulse', 'twinkle', 'shadow'], pulse: ['twinkle', 'animation'], screensaver: ['loop', 'canvas', 'animation'], space: ['star', 'sky'], title: ['heading', 'header']
+};
+
+function buildIndex(skills) {
+  const docs = []; const df = new Map();
+  for (const s of skills) {
+    const f = {
+      name: tok(s.name), tags: tok((s.tags || []).join(' ')), summary: tok(s.summary), provides: tok((s.provides || []).join(' ')), path: tok(s.path + ' ' + s.project),
+      code: tok(s.code.slice(0, 3000))
+    };
+    const all = new Set(Object.values(f).flat());
+    for (const t of all) df.set(t, (df.get(t) || 0) + 1);
+    docs.push({ s, f, sets: Object.fromEntries(Object.entries(f).map(([k, v]) => [k, new Set(v)])) });
+  }
+  return { docs, df, N: docs.length };
+}
+const FIELD_W = { name: 4, tags: 3, summary: 2, provides: 2, path: 0.5, code: 0.5 };
+
+function recall(index, query, limit = 60) {
+  const base = [...new Set(tok(query))]; if (!base.length) return [];
+  const terms = base.map(t => ({ t, w: 1 }));
+  for (const t of base) for (const syn of SYN[t] || SYN[t.slice(0, 5)] || []) if (!base.includes(stem(syn))) terms.push({ t: stem(syn), w: 0.45 });
+  const res = [];
+  for (const d of index.docs) {
+    let score = 0; let matched = 0;
+    for (const { t, w } of terms) {
+      const idf = Math.log(1 + index.N / (1 + (index.df.get(t) || 0)));
+      let hit = 0;
+      for (const [fld, fw] of Object.entries(FIELD_W)) {
+        if (d.sets[fld].has(t)) hit = Math.max(hit, fw);
+        else if (t.length >= 3) for (const x of d.sets[fld]) { if (x.startsWith(t)) { hit = Math.max(hit, fw * 0.5); break; } if (x.length >= 4 && t.startsWith(x)) { hit = Math.max(hit, fw * 0.8); break; } }
+      }
+      if (hit) { score += idf * hit * w; if (w === 1) matched++; }
+    }
+    if (!score) continue;
+    score *= 0.55 + 0.45 * (matched / base.length);
+    score += Math.log(1 + (d.s.hits || 0)) * 0.4;
+    res.push({ s: d.s, score });
+  }
+  res.sort((a, b) => b.score - a.score);
+  const top = res[0] ? res[0].score : 1;
+  return res.slice(0, limit).map(r => ({ s: r.s, score: r.score, rel: r.score / top }));
+}
+
+/* ================= assembling a build ================= */
+function closure(ids, byId) {
+  const seen = new Set(); const order = [];
+  const visit = id => {
+    if (seen.has(id)) return; const s = byId[id]; if (!s) return; seen.add(id);
+    for (const u of s.uses || []) visit(u);
+    if (s.kind !== 'composite') order.push(id);
+  };
+  ids.forEach(visit);
+  return order;
+}
+
+function cleanJS(code) {
+  return code
+    .replace(/^\s*import[\s\S]*?from\s*['"][^'"]+['"];?[ \t]*$/gm, '')
+    .replace(/^\s*import\s*['"][^'"]+['"];?[ \t]*$/gm, '')
+    .replace(/^(\s*)export\s+default\s+(?=(async\s+)?function|class)/gm, '$1')
+    .replace(/^(\s*)export\s+(?=(async\s+)?function|class|const|let|var)/gm, '$1');
+}
+const CDN = {
+  react: ['https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js'],
+  three: ['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js']
+};
+
+function assemble(ids, byId, goal) {
+  const order = closure(ids, byId); const parts = order.map(id => byId[id]); const notes = []; const used = [];
+  const css = [], markup = [], js = []; const pkgs = new Set(); let jsx = false;
+  const kindRank = { tokens: 0, keyframes: 1, css: 2 };
+  for (const s of parts) {
+    if (['tokens', 'keyframes', 'css'].includes(s.kind)) css.push(s);
+    else if (['html', 'svg'].includes(s.kind)) markup.push(s);
+    else if (['fn', 'class', 'component', 'data', 'shader', 'entry'].includes(s.kind) && s.lang === 'js') js.push(s);
+    else if (s.kind === 'type') notes.push(`Skipped type ${s.name} (needs a TypeScript build).`);
+    else if (s.kind === 'skill') notes.push(`Skill “${s.name}” is instructions, not code — not embedded.`);
+    else notes.push(`Skipped ${s.name} (${s.kind}/${s.lang}) — can’t be embedded in a web page.`);
+    (s.pkgs || []).forEach(p => pkgs.add(p));
+  }
+  css.sort((a, b) => (kindRank[a.kind] ?? 3) - (kindRank[b.kind] ?? 3));
+  const src = (a, b) => (a.project + a.path).localeCompare(b.project + b.path) || a.line - b.line;
+  markup.sort(src);
+  // dependency-ordered JS, entries last
+  const rank = k => (k === 'entry' ? 2 : 1);
+  const jsSorted = []; const done = new Set(); const inSet = new Set(js.map(s => s.id));
+  const put = s => { if (done.has(s.id)) return; done.add(s.id); for (const u of s.uses || []) if (inSet.has(u) && u !== s.id && !done.has(u) && byId[u].kind !== 'entry') put(byId[u]); jsSorted.push(s); };
+  [...js].sort((a, b) => rank(a.kind) - rank(b.kind) || src(a, b)).forEach(put);
+  // collisions
+  const declared = new Map(); const finalJs = [];
+  for (const s of jsSorted) {
+    if (s.kind !== 'entry' && s.provides[0]) {
+      if (declared.has(s.provides[0])) { notes.push(`Name clash: “${s.provides[0]}” exists in ${declared.get(s.provides[0])} and ${s.path || s.project} — kept the first.`); continue; }
+      declared.set(s.provides[0], s.path || s.project);
+    }
+    finalJs.push(s);
+  }
+  jsx = finalJs.some(s => s.kind === 'component' || /^\s*<[A-Za-z]/m.test(s.code) && JSX_RE.test(s.code));
+  const libs = [];
+  if (jsx || [...pkgs].some(p => /^react/.test(p))) libs.push(...CDN.react);
+  if ([...pkgs].includes('three')) libs.push(...CDN.three);
+  for (const p of pkgs) if (!/^(react|react-dom|three)$/.test(p)) notes.push(`Imports “${p}” were removed — load that library yourself if a part needs it.`);
+  let script = finalJs.map(s => `/* ▸ ${s.name}${s.path ? ` · ${s.project}/${s.path}` : ''} */\n${cleanJS(s.code)}`).join('\n\n');
+  if (libs.length && (jsx || /\buse(State|Effect|Ref|Memo|Callback)\b/.test(script))) {
+    const hooks = [...new Set(script.match(/\buse(State|Effect|Ref|Memo|Callback|Reducer|Context|LayoutEffect)\b/g) || [])];
+    if (hooks.length && !/const\s*\{[^}]*useState/.test(script)) script = `const { ${hooks.join(', ')} } = React;\n\n` + script;
+  }
+  const title = (goal || 'Kitbash build').replace(/\s+/g, ' ').slice(0, 60);
+  const cssText = css.map(s => `/* ▸ ${s.name} */\n${s.code}`).join('\n\n');
+  const body = markup.map(s => `<!-- ▸ ${s.name} -->\n${s.code}`).join('\n');
+  const html = `<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>${esc(title)}</title>\n${libs.map(u => `<script src="${u}"><\/script>`).join('\n')}${libs.length ? '\n' : ''}${cssText ? `<style>\n${cssText}\n</style>\n` : ''}</head>\n<body>\n${body}\n${script ? `<script${jsx ? ' type="text/babel" data-presets="react"' : ''}>\n${script}\n<\/script>\n` : ''}</body>\n</html>\n`;
+  const requested = new Set(ids); const pulled = order.filter(id => !requested.has(id));
+  const composites = ids.filter(id => byId[id] && byId[id].kind === 'composite');
+  composites.forEach(id => notes.push(`“${byId[id].name}” is an earlier build — its ${byId[id].uses.length} parts were pulled in instead of the finished page.`));
+  return { html, order, pulled, notes, count: css.length + markup.length + finalJs.length, jsx };
+}
+
+/* ================= zip export ================= */
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = b => { let c = ~0; for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return (~c) >>> 0; };
+function makeZip(files) {
+  const enc = new TextEncoder(); const parts = [], central = []; let offset = 0, cdSize = 0; const d = new Date();
+  const time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1), date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+  for (const f of files) {
+    const nm = enc.encode(f.name), data = enc.encode(f.data), crc = crc32(data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(10, time, true); lh.setUint16(12, date, true);
+    lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true); lh.setUint16(26, nm.length, true);
+    parts.push(lh.buffer, nm, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(12, time, true); ch.setUint16(14, date, true);
+    ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true); ch.setUint16(28, nm.length, true); ch.setUint32(42, offset, true);
+    central.push(ch.buffer, nm); cdSize += 46 + nm.length; offset += 30 + nm.length + data.length;
+  }
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true); end.setUint32(12, cdSize, true); end.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, end.buffer], { type: 'application/zip' });
+}
+const EXT_OF = { js: 'js', css: 'css', html: 'html', py: 'py', glsl: 'glsl', json: 'json', md: 'md' };
+
+/* ================= storage ================= */
+const Backend = {
+  kind: 'memory', db: null, mem: new Map(),
+  async init() {
+    const db = await cap('db');
+    if (db) { try { const snap = await db.collection('packs').get(); this.db = db; this.kind = 'shared'; return snap.docs.map(d => ({ id: d.id, data: d.data() })); } catch (e) { console.warn('db unavailable', e); } }
+    try {
+      const rows = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith('kitbash:pack:')) rows.push({ id: k.slice(13), data: JSON.parse(localStorage.getItem(k)) }); }
+      localStorage.setItem('kitbash:probe', '1'); localStorage.removeItem('kitbash:probe'); this.kind = 'local'; return rows;
+    } catch { this.kind = 'memory'; return []; }
+  },
+  async save(id, data) {
+    if (this.kind === 'shared') return this.db.doc('packs/' + id).set(data);
+    if (this.kind === 'local') { try { localStorage.setItem('kitbash:pack:' + id, JSON.stringify(data)); return; } catch { this.kind = 'memory'; } }
+    this.mem.set(id, data);
+  },
+  async remove(id) {
+    if (this.kind === 'shared') return this.db.doc('packs/' + id).delete();
+    if (this.kind === 'local') { try { localStorage.removeItem('kitbash:pack:' + id); } catch { /* ignore */ } }
+    this.mem.delete(id);
+  }
+};
+async function cap(name) { try { const c = window.claude; return c && c.use ? ((await c.use(name)) || null) : null; } catch { return null; } }
+/* ================= sample project (unsaved until memorized) ================= */
+const SAMPLE_GOAL = 'Starfield screensaver: stars flying toward the camera, a glowing title and a star counter';
+const SAMPLE_FILES = [
+  {
+    path: 'index.html', text: `<!doctype html>
+<html><head><title>Starfield</title><link rel="stylesheet" href="css/theme.css"></head>
+<body>
+<div class="stage"><canvas id="sky"></canvas></div>
+<h1 class="title">Starfield</h1>
+<div class="hud" id="hud">stars <b>400</b></div>
+<script type="module">
+import { createStars, stepStars, drawStars } from './js/stars.js';
+import { createLoop } from './js/loop.js';
+
+const canvas = document.getElementById('sky');
+const ctx = canvas.getContext('2d');
+function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+addEventListener('resize', resize);
+resize();
+
+const stars = createStars(400);
+createLoop(dt => { stepStars(stars, dt); drawStars(ctx, stars); }).start();
+<\/script>
+</body></html>
+` },
+  {
+    path: 'css/theme.css', text: `:root { --space: #070b1a; --star: #e8f0ff; --nova: #ffb86b; --hud: #7fd6c2; }
+
+/* Full-screen stage that hosts a canvas. */
+.stage { position: fixed; inset: 0; background: var(--space); }
+.stage canvas { display: block; width: 100%; height: 100%; }
+
+/* Small monospace read-out pinned to the corner. */
+.hud { position: fixed; left: 16px; bottom: 16px; font: 12px/1.4 ui-monospace, monospace; color: var(--hud); letter-spacing: .08em; text-transform: uppercase; }
+.hud b { color: var(--nova); }
+
+@keyframes twinkle { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+
+/* Big centred title that gently pulses. */
+.title { position: fixed; top: 12%; width: 100%; margin: 0; text-align: center; color: var(--star); font: 600 clamp(28px, 6vw, 64px)/1 system-ui, sans-serif; text-shadow: 0 0 24px var(--nova); animation: twinkle 4s ease-in-out infinite; }
+` },
+  {
+    path: 'js/math.js', text: `/** Clamp a number between lo and hi. */
+export function clamp(x, lo, hi) { return Math.min(hi, Math.max(lo, x)); }
+
+/** Linear interpolation between a and b. */
+export function lerp(a, b, t) { return a + (b - a) * t; }
+
+/** Random float in [lo, hi). */
+export function rand(lo, hi) { return lo + Math.random() * (hi - lo); }
+` },
+  {
+    path: 'js/loop.js', text: `import { clamp } from './math.js';
+
+/** Animation loop that calls tick(dt) every frame with dt in seconds (capped at 50ms). */
+export function createLoop(tick) {
+  let last = performance.now(), id = 0, running = false;
+  function frame(now) {
+    const dt = clamp((now - last) / 1000, 0, 0.05);
+    last = now;
+    tick(dt);
+    if (running) id = requestAnimationFrame(frame);
+  }
+  return {
+    start() { if (running) return; running = true; last = performance.now(); id = requestAnimationFrame(frame); },
+    stop() { running = false; cancelAnimationFrame(id); }
+  };
+}
+` },
+  {
+    path: 'js/stars.js', text: `import { rand, lerp } from './math.js';
+
+export const STAR_COLORS = ['#e8f0ff', '#ffd9a8', '#a8c8ff', '#ffb86b'];
+
+/** Scatter n stars through 3D space (z is depth, 0 = at the camera). */
+export function createStars(n) {
+  return Array.from({ length: n }, () => ({
+    x: rand(-1, 1), y: rand(-1, 1), z: rand(0.05, 1),
+    c: STAR_COLORS[(Math.random() * STAR_COLORS.length) | 0]
+  }));
+}
+
+/** Move stars toward the camera and recycle any that pass it. */
+export function stepStars(stars, dt, speed = 0.35) {
+  for (const s of stars) {
+    s.z -= dt * speed;
+    if (s.z <= 0.02) { s.z = 1; s.x = rand(-1, 1); s.y = rand(-1, 1); }
+  }
+}
+
+/** Draw the stars onto a 2D canvas context with simple perspective. */
+export function drawStars(ctx, stars) {
+  const { width: w, height: h } = ctx.canvas;
+  ctx.fillStyle = '#070b1a';
+  ctx.fillRect(0, 0, w, h);
+  for (const s of stars) {
+    const k = 1 / s.z;
+    const px = w / 2 + s.x * k * w * 0.25, py = h / 2 + s.y * k * h * 0.25;
+    ctx.fillStyle = s.c;
+    ctx.beginPath();
+    ctx.arc(px, py, lerp(2.4, 0.3, s.z), 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+` },
+  { path: 'assets/logo.png', text: null, skip: 'binary image' }
+];
+/* ================= TEAM — shared multi-agent workspace =================
+   Talks to the Kitbash Workspace server. Inside claude.ai that is the custom connector, reached through the page's `mcp` capability;
+   when Kitbash is served by the workspace server itself (standalone) it is the same server, reached at /api/tool with the owner key.
+   Identity rules live on the server: this page's connection is whichever agent the owner picked when adding
+   the connector (normally "claude"). Owner-authority actions (approve, write as owner, run the OpenAI agent)
+   add the owner key to the call; agent-authority actions (what in-page Claude does) never carry it. */
+const TEAM_SERVER = 'Kitbash Workspace';
+const TEAM_TOOLS = ['whoami', 'list_agents', 'list_files', 'read_file', 'list_tasks', 'get_messages', 'list_approvals', 'list_checkpoints',
+  'post_message', 'create_task', 'update_task', 'handoff_task', 'claim_file', 'write_file', 'propose_change', 'create_checkpoint',
+  'decide_approval', 'register_agent', 'set_agent_enabled', 'run_agent'];
+const team = { status: 'idle', err: '', me: null, agents: [], files: [], tasks: [], messages: [], approvals: [], checkpoints: [], sub: 'chat', to: 'claude', busy: '', key: '', openFile: null, draft: '', form: {} };
+try { team.key = sessionStorage.getItem('kb-owner-key') || ''; } catch { /* storage unavailable */ }
+const TEAM_SUBS = [['chat', 'Chat'], ['tasks', 'Tasks'], ['files', 'Files'], ['approvals', 'Approvals'], ['agents', 'Agents']];
+const TO_OPTS = [['claude', 'Claude'], ['openai-api', 'OpenAI agent'], ['both', 'Both, Claude first'], ['chatgpt', 'ChatGPT (inbox only)']];
+/* Standalone mode: this page was served by the workspace server, so talk to it directly. Every call carries the owner key, and the
+   server treats the caller as the owner (never as an agent). Same tool names and results as the connector. */
+function teamServerMcp() {
+  return { callTool: async (_server, tool, input) => {
+    if (!team.key) throw { code: 'need_key', message: 'Enter the owner key first' };
+    let r, j = null;
+    try { r = await fetch('/api/tool', { method: 'POST', headers: { 'content-type': 'application/json', 'x-owner-key': team.key }, body: JSON.stringify({ tool, input }) }); j = await r.json(); }
+    catch { throw { code: 'server_unavailable', message: 'Could not reach the workspace server.', retryable: true }; }
+    if (!j) throw { code: 'server_unavailable', message: `The server answered ${r.status}.` };
+    if (j.isError) throw { code: 'tool_error', message: j.text, result: { content: [{ type: 'text', text: j.text }] } };
+    let payload = j.text; try { payload = JSON.parse(j.text); } catch { /* plain text */ }
+    return { content: [{ type: 'text', text: j.text }], payload };
+  } };
+}
+const agentName = id => (team.agents.find(a => a.id === id) || {}).name || id || '—';
+
+/* ---- transport ---- */
+async function tcall(tool, args, { owner = false } = {}) {
+  const mcp = state.caps.mcp; if (!mcp) throw { code: 'no_mcp', message: 'This view has no connector access' };
+  const input = {}; for (const [k, v] of Object.entries(args || {})) if (v !== undefined && v !== null && k !== 'owner_key') input[k] = v;   // JSON only: never send undefined/null
+  if (owner) { if (!team.key) throw { code: 'need_key', message: 'Enter the owner key first' }; input.owner_key = team.key; }
+  const res = await mcp.callTool(TEAM_SERVER, tool, input, { cache: false });
+  return res.payload;
+}
+function terr(e) {
+  const c = e && e.code;
+  if (c === 'no_mcp') return 'Connector access isn’t available in this view.';
+  if (c === 'need_key') return 'Enter your owner key at the top first.';
+  if (c === 'server_not_connected') return `Add a connector named “${TEAM_SERVER}” in claude.ai → Settings → Connectors, then reload this page.`;
+  if (c === 'selection_required') return `More than one “${TEAM_SERVER}” connector exists — choose one when asked, then reload.`;
+  if (c === 'needs_reauth') return `Reconnect “${TEAM_SERVER}” in claude.ai → Settings → Connectors.`;
+  if (c === 'not_in_manifest') return 'Access to the workspace connector was turned off for this page.';
+  if (c === 'blocked_by_policy' || c === 'approval_required') return 'Your organisation’s policy blocks this connector action.';
+  if (c === 'server_unavailable') return 'The workspace server didn’t answer. Try again in a moment.';
+  if (c === 'cancelled') return 'Cancelled.';
+  if (c === 'tool_error') {
+    let body = null; try { body = JSON.parse(e.message); } catch { try { body = JSON.parse(e.result.content[0].text); } catch { /* not JSON */ } }
+    if (body && body.error) return ({ conflict: 'Someone changed that file first — refresh and try again.', bad_owner_key: 'Wrong owner key.', owner_required: 'That needs the owner key.', locked: 'That file is leased to another agent.', not_owner: 'That file belongs to another agent — use a proposal.', not_configured: body.message, too_large: body.message }[body.error] || body.message || body.error);
+  }
+  return (e && e.message) || 'Something went wrong.';
+}
+async function tdo(label, fn) {
+  if (team.busy) return; team.busy = label; renderTeamBody();
+  try { const r = await fn(); team.busy = ''; return r; }
+  catch (e) { team.busy = ''; renderTeamBody(); toast(terr(e)); if (e && (e.code === 'bad_owner_key' || /owner key/i.test(terr(e)))) $('#t-key') && $('#t-key').focus(); }
+  finally { team.busy = ''; }
+}
+
+/* ---- data ---- */
+async function teamRefresh() {
+  if (team.standalone && !team.key) { team.status = 'error'; team.err = 'Enter your owner key above to open the workspace.'; renderTeamHead(); renderTeamBody(); return; }
+  if (team.refreshing) return; team.refreshing = true;
+  team.status = 'loading'; renderTeamHead();
+  try {
+    const me = await tcall('whoami');   // one call first: a wrong owner key must cost one attempt against the lockout, not seven
+    const [agents, files, tasks, messages, approvals, checkpoints] = await Promise.all([
+      tcall('list_agents'), tcall('list_files'), tcall('list_tasks'), tcall('get_messages', { limit: 100 }), tcall('list_approvals'), tcall('list_checkpoints')]);
+    Object.assign(team, { me, agents, files, tasks, messages, approvals, checkpoints, status: 'ok', err: '' });
+  } catch (e) { team.status = e && e.code === 'no_mcp' ? 'none' : 'error'; team.err = terr(e); team.errCode = e && e.code; }
+  team.refreshing = false; renderTeamHead(); renderTeamBody();
+}
+const clearForm = (...ids) => ids.forEach(id => { delete team.form[id]; const el = document.getElementById(id); if (el) el.value = ''; });
+const pendingCount = () => team.approvals.filter(a => a.status === 'pending').length;
+
+/* ---- views ---- */
+function viewTeam() {
+  $('#view').innerHTML = `<section class="page team">
+    <div id="t-head"></div>
+    <div class="subnav" id="t-sub" role="tablist"></div>
+    <div id="t-body"></div></section>`;
+  renderTeamHead(); renderTeamBody();
+  if (team.status === 'idle' && state.caps.mcp) teamRefresh(); else if (!state.caps.mcp) { team.status = 'none'; renderTeamHead(); renderTeamBody(); }
+}
+function renderTeamHead() {
+  const h = $('#t-head'); if (!h) return; const s = team.status;
+  const chip = s === 'ok' ? `<span class="tchip ok">Connected as ${esc(agentName(team.me && team.me.you.actor))}</span>` : s === 'loading' ? '<span class="tchip">Connecting…</span>' : s === 'none' ? '<span class="tchip bad">No connector access here</span>' : s === 'error' ? '<span class="tchip bad">Not connected</span>' : '<span class="tchip">Not connected</span>';
+  const keyRow = `<div class="keyrow"><input id="t-key" type="password" autocomplete="off" placeholder="Owner key (needed to approve, write files, run the OpenAI agent)" value="${esc(team.key)}" aria-label="Owner key"><button class="btn ghost small" data-t="refresh">Refresh</button></div>`;
+  const hasKey = !!$('#t-key'); if (hasKey && $('#t-head .keyrow')) { $('#t-head .tchipbox').innerHTML = chip; return; }
+  h.innerHTML = `<div class="thead"><div><h2>Team</h2><p class="hint">Claude, ChatGPT and other agents share one workspace with you.</p></div><div class="tchipbox">${chip}</div></div>${keyRow}`;
+}
+function renderTeamBody() {
+  const b = $('#t-body'); if (!b) return;
+  const sub = $('#t-sub'); if (sub) sub.innerHTML = TEAM_SUBS.map(([k, l]) => `<button class="chip${team.sub === k ? ' on' : ''}" data-t="sub" data-k="${k}">${l}${k === 'approvals' && pendingCount() ? `<i>${pendingCount()}</i>` : ''}</button>`).join('');
+  if (team.status !== 'ok') { b.innerHTML = teamSetup(); return; }
+  $$('#t-body input[id], #t-body textarea[id], #t-body select[id]').forEach(el => { if (el.type !== 'file') team.form[el.id] = el.value; });   // keep half-typed forms across refreshes
+  b.innerHTML = ({ chat: teamChat, tasks: teamTasks, files: teamFiles, approvals: teamApprovals, agents: teamAgents })[team.sub]();
+  for (const [id, v] of Object.entries(team.form)) { const el = document.getElementById(id); if (el && b.contains(el) && v) el.value = v; }
+  const log = $('#t-log'); if (log) log.scrollTop = log.scrollHeight;
+}
+function teamSetup() {
+  if (team.status === 'loading' || team.status === 'idle') return '<div class="empty"><h2>Connecting…</h2></div>';
+  if (team.standalone) return `<div class="empty"><h2>Open the team workspace</h2><p>${esc(team.err || 'Enter your owner key above.')}</p><p class="hint">The owner key is the OWNER_SECRET you set on the server. It is kept in this browser tab only and sent to this server with each request.</p><button class="btn" data-t="refresh">Open workspace</button></div>`;
+  return `<div class="empty"><h2>Set up the workspace connector</h2>
+    <p>${esc(team.err || 'The Team tab needs the Kitbash Workspace server.')}</p>
+    <ol class="steps">
+      <li>Deploy the Kitbash Workspace server (the Railway app in this project; its README has the steps) and set an owner key.</li>
+      <li>In claude.ai → Settings → Connectors, add a custom connector named exactly <b>${esc(TEAM_SERVER)}</b> with the URL <code>https://&lt;your-app&gt;.up.railway.app/mcp</code>.</li>
+      <li>On the approval page choose the agent this connection is (Claude) and enter your owner key. Then reload this page.</li>
+    </ol>
+    <p class="hint">ChatGPT connects to the same URL from its own settings. That connection is separate, and depends on your ChatGPT plan.</p>
+    <button class="btn ghost" data-t="refresh">Try again</button></div>`;
+}
+
+const kindLabel = m => m.kind === 'handoff' ? 'handoff' : m.kind === 'system' ? 'system' : m.kind === 'review' ? 'review' : '';
+function teamChat() {
+  const msgs = team.messages.map(m => `<div class="msg from-${esc(m.sender)} k-${esc(m.kind)}"><div class="mh"><b>${esc(agentName(m.sender))}</b><span>→ ${esc(m.recipient === 'all' ? 'everyone' : agentName(m.recipient))}${m.task_id ? ` · task #${m.task_id}` : ''}${kindLabel(m) ? ` · ${kindLabel(m)}` : ''} · ${esc(ago(m.ts))}</span></div><div class="mb">${esc(m.body)}</div></div>`).join('');
+  const canClaude = !!state.caps.sample;
+  return `<div class="tlog" id="t-log">${msgs || '<p class="hint pad">No messages yet. Say something to an agent below.</p>'}</div>
+  <div class="composer"><textarea id="t-draft" rows="3" placeholder="Message the team…">${esc(team.draft)}</textarea>
+    <div class="row wrap"><label class="tolab">To <select id="t-to">${TO_OPTS.map(([k, l]) => `<option value="${k}"${team.to === k ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
+    <button class="btn" data-t="send"${team.busy ? ' disabled' : ''}>${team.busy === 'send' ? 'Working…' : 'Send'}</button></div>
+    <p class="hint">${team.to === 'chatgpt' ? 'ChatGPT reads this the next time it is connected to the workspace. It can’t be woken from here.' : team.to === 'openai-api' || team.to === 'both' ? 'The OpenAI agent runs on the server with only what is in this workspace — it doesn’t know your ChatGPT conversations.' : ''}${(team.to === 'claude' || team.to === 'both') && !canClaude ? ' Claude can’t be woken from here; it sees this when it next connects to the workspace.' : ''}</p></div>`;
+}
+function teamTasks() {
+  const asg = team.agents.filter(a => a.enabled && a.id !== 'owner');
+  const opt = (sel) => `<option value="">unassigned</option>` + asg.map(a => `<option value="${esc(a.id)}"${a.id === sel ? ' selected' : ''}>${esc(a.name)}</option>`).join('');
+  const cards = team.tasks.map(t => {
+    const live = !['done', 'cancelled'].includes(t.status);
+    const run = live && t.assignee === 'openai-api' ? `<button class="btn small" data-t="run-task" data-id="${t.id}"${team.busy ? ' disabled' : ''}>Run OpenAI agent</button>` : live && t.assignee === 'claude' && state.caps.sample ? `<button class="btn small" data-t="claude-task" data-id="${t.id}"${team.busy ? ' disabled' : ''}>Ask Claude to work on it</button>` : '';
+    return `<article class="tcard"><div class="row wrap"><b>#${t.id} ${esc(t.title)}</b><span class="tchip st-${esc(t.status)}">${esc(t.status.replace('_', ' '))}</span></div>
+      ${t.description ? `<p class="hint">${esc(t.description)}</p>` : ''}
+      <p class="meta">${t.assignee ? `with ${esc(agentName(t.assignee))}` : 'unassigned'} · by ${esc(agentName(t.created_by))}${t.files.length ? ` · files: ${t.files.map(esc).join(', ')}` : ''}</p>
+      ${live ? `<div class="row wrap"><select data-t="hand-sel" data-id="${t.id}" aria-label="Hand off to">${asg.filter(a => a.id !== t.assignee).map(a => `<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('')}</select><button class="btn ghost small" data-t="handoff" data-id="${t.id}"${team.busy ? ' disabled' : ''}>Hand off</button>
+      <select data-t="status" data-id="${t.id}" aria-label="Status">${['open', 'in_progress', 'review', 'blocked', 'done', 'cancelled'].map(s => `<option${s === t.status ? ' selected' : ''}>${s}</option>`).join('')}</select>${run}</div>` : ''}</article>`;
+  }).join('');
+  return `<div class="tnew"><input id="tk-title" placeholder="New task title"><div class="row wrap"><select id="tk-asg">${opt('')}</select><input id="tk-files" placeholder="Files it may touch (comma separated, optional)"></div><button class="btn small" data-t="new-task"${team.busy ? ' disabled' : ''}>Create task</button></div>
+    ${cards || '<p class="hint pad">No tasks yet.</p>'}`;
+}
+function teamFiles() {
+  const rows = team.files.map(f => `<button class="frow${team.openFile && team.openFile.path === f.path ? ' on' : ''}" data-t="open-file" data-path="${esc(f.path)}"><span class="fp">${esc(f.path)}</span><span class="meta">r${f.rev} · ${esc(f.format)} · ${esc(agentName(f.owner))}${f.lease ? ` · leased to ${esc(agentName(f.lease.holder))}` : ''} · ${f.size} B</span></button>`).join('');
+  const of = team.openFile;
+  const view = of ? `<div class="fview"><div class="row wrap"><b>${esc(of.path)}</b><span class="meta">rev ${of.rev} · ${esc(of.format)} · ${esc(of.encoding)} · sha ${esc(String(of.sha).slice(0, 10))}</span></div><pre>${esc(of.encoding === 'utf8' ? of.content.slice(0, 6000) + (of.content.length > 6000 ? '\n… (' + of.content.length + ' chars)' : '') : `[binary, ${of.content.length} base64 chars]`)}</pre></div>` : '';
+  const parts = all().slice(0, 300).map(s => `<option value="${esc(s.id)}">${esc(s.name)} (${esc(kindInfo(s.kind)[2])})</option>`).join('');
+  const cps = team.checkpoints.length ? `<p class="hint">Checkpoints: ${team.checkpoints.slice(0, 5).map(c => `#${c.id}${c.label ? ' ' + esc(c.label) : ''} (${esc(ago(c.ts))})`).join(' · ')}</p>` : '';
+  return `${rows || '<p class="hint pad">No files yet. Import some below.</p>'}${view}
+    <div class="tnew"><b>Import files as resources</b><p class="hint">Stored exactly as they are, with a format tag and revision history — NTree and NTN files are kept as opaque resources.</p>
+      <input id="tf-tag" placeholder="Format tag, e.g. ntree/manifest or ntn/config (optional)">
+      <div class="row wrap"><label class="btn ghost small filebtn">Choose files<input id="tf-files" type="file" multiple hidden></label><span class="hint">Saved under imports/ as you.</span></div></div>
+    ${parts ? `<div class="tnew"><b>Share a part</b><div class="row wrap"><select id="tp-sel">${parts}</select><button class="btn ghost small" data-t="share-part"${team.busy ? ' disabled' : ''}>Share to workspace</button></div></div>` : ''}
+    <div class="tnew"><div class="row wrap"><input id="tc-label" placeholder="Checkpoint label (optional)"><button class="btn ghost small" data-t="checkpoint"${team.busy ? ' disabled' : ''}>Create checkpoint</button></div>${cps}</div>`;
+}
+function teamApprovals() {
+  const pend = team.approvals.filter(a => a.status === 'pending'), done = team.approvals.filter(a => a.status !== 'pending');
+  const card = a => { const p = a.payload || {}; return `<article class="tcard"><div class="row wrap"><b>#${a.id} ${esc(a.kind.replace('_', ' '))}</b><span class="tchip st-${esc(a.status)}">${esc(a.status)}</span></div>
+    <p class="meta">from ${esc(agentName(a.requested_by))}${p.path ? ` · ${esc(p.path)}` : ''}${p.checkpoint_id ? ` · checkpoint #${p.checkpoint_id}` : ''} · ${esc(ago(a.ts))}</p>${a.reason ? `<p class="hint">${esc(a.reason)}</p>` : ''}
+    ${p.content_preview !== undefined ? `<pre>${esc(String(p.content_preview).slice(0, 800))}</pre>` : ''}
+    ${a.status === 'pending' ? `<div class="row wrap"><button class="btn small" data-t="decide" data-id="${a.id}" data-d="approve"${team.busy ? ' disabled' : ''}>Approve</button><button class="btn ghost small" data-t="decide" data-id="${a.id}" data-d="reject"${team.busy ? ' disabled' : ''}>Reject</button></div>` : `<p class="meta">decided by ${esc(agentName(a.decided_by))}</p>`}</article>`; };
+  return `${pend.map(card).join('') || '<p class="hint pad">Nothing waiting for you. Agents can’t delete files, restore checkpoints or overwrite another agent’s work without asking here first.</p>'}
+    ${done.length ? `<details><summary>${done.length} decided</summary>${done.slice(0, 20).map(card).join('')}</details>` : ''}`;
+}
+function teamAgents() {
+  const rows = team.agents.map(a => `<article class="tcard"><div class="row wrap"><b>${esc(a.name)}</b><span class="tchip ${a.enabled ? 'ok' : 'bad'}">${a.enabled ? 'enabled' : 'disabled'}</span></div><p class="meta">${esc(a.id)} · ${esc(a.kind)}${a.last_seen ? ` · seen ${esc(ago(a.last_seen))}` : ' · never connected'}</p>${a.description ? `<p class="hint">${esc(a.description)}</p>` : ''}
+    ${a.id !== 'owner' ? `<button class="btn ghost small" data-t="toggle-agent" data-id="${esc(a.id)}" data-on="${a.enabled ? 0 : 1}"${team.busy ? ' disabled' : ''}>${a.enabled ? 'Disable' : 'Enable'}</button>` : ''}</article>`).join('');
+  return `${rows}<div class="tnew"><b>Register another agent</b><input id="ta-id" placeholder="id, e.g. gemini"><input id="ta-name" placeholder="Display name"><button class="btn small" data-t="reg-agent"${team.busy ? ' disabled' : ''}>Register</button>
+    <p class="hint">Registering makes the identity available on the connector approval page. It gets no access until you approve a connection for it.</p></div>`;
+}
+
+/* ---- in-page Claude (agent identity: never carries the owner key) ---- */
+const clip = (s, n) => (String(s).length > n ? String(s).slice(0, n) : String(s));
+async function askClaude(instruction, taskId) {
+  const sample = state.caps.sample; if (!sample) throw { code: 'not_granted', message: 'Claude access isn’t available in this view' };
+  const brief = await tcall('read_file', { path: 'project/BRIEF.md' }).then(f => clip(f.content, 6000)).catch(() => null);
+  const ctxMsgs = team.messages.slice(-15).map(m => `#${m.id} ${m.sender}→${m.recipient}: ${clip(m.body, 500)}`).join('\n');
+  const files = team.files.slice(0, 60).map(f => `${f.path} (r${f.rev}, ${f.format}, owner ${f.owner}${f.lease ? ', leased to ' + f.lease.holder : ''})`).join('\n');
+  const task = taskId ? team.tasks.find(t => t.id === taskId) : null;
+  const prompt = `You are "claude", one agent in the Kitbash shared workspace. Other agents (ChatGPT, an embedded OpenAI agent) and the human owner share it. You do not remember earlier conversations; everything you know is below or in the workspace.
+Rules the server enforces on you: every write needs base_rev (0 to create, otherwise the revision you just read); you may only edit files you own or hold a lease on (claim_file works for files listed on a task assigned to you); otherwise use propose_change. You cannot delete files or approve anything. Keep imported NTree/NTN resources byte-exact.
+Reply to the owner in plain, short prose. Your final text is posted to the log automatically, so don't call post_message for it; use post_message only to leave a note for another agent.
+${brief ? `OWNER BRIEF:\n${brief}\n` : ''}FILES:\n${files || '(none)'}\nRECENT MESSAGES:\n${ctxMsgs || '(none)'}\n${task ? `TASK #${task.id} (assigned to you): ${task.title}\n${task.description}\nFiles: ${task.files.join(', ') || 'none'}\nWhen done, use update_task (status review or done) or handoff_task with a note.\n` : ''}OWNER SAYS: ${instruction}`;
+  const S = (n, d, props, req) => ({ name: n, description: d, inputSchema: { type: 'object', properties: props, required: req || [] }, execute: async (a) => {
+    try { const r = await tcall(n, a || {}); const txt = typeof r === 'string' ? r : JSON.stringify(r); return txt.length > 12000 ? { truncated: true, text: txt.slice(0, 12000) } : (typeof r === 'string' ? { text: r } : r); }
+    catch (e) { return { error: terr(e) }; } } });
+  const str = { type: 'string' }, int = { type: 'integer' };
+  const tools = [
+    S('list_files', 'List workspace files.', { prefix: str }), S('read_file', 'Read a file (returns content, rev).', { path: str }, ['path']),
+    S('write_file', 'Create (base_rev 0) or update a file you own or have leased.', { path: str, content: str, base_rev: int, format: str, message: str }, ['path', 'content', 'base_rev']),
+    S('propose_change', 'Propose new content for a file you can’t edit; the owner approves.', { path: str, content: str, base_rev: int, rationale: str }, ['path', 'content', 'base_rev']),
+    S('claim_file', 'Lease a file for a task assigned to you.', { path: str, task_id: int }, ['path']),
+    S('create_task', 'Create a task.', { title: str, description: str, assignee: str, files: { type: 'array', items: str } }, ['title']),
+    S('update_task', 'Change a task’s status/note.', { id: int, status: { type: 'string', enum: ['open', 'in_progress', 'review', 'blocked', 'done', 'cancelled'] }, note: str }, ['id']),
+    S('handoff_task', 'Hand your task to another agent.', { id: int, to: str, note: str }, ['id', 'to']),
+    S('post_message', 'Leave a note for another agent.', { to: str, body: str, task_id: int }, ['to', 'body'])
+  ];
+  const res = await sample(prompt, { tools, modelTier: 'default', cache: false });
+  const text = (res.text || '').trim();
+  if (text) await tcall('post_message', { to: 'owner', body: clip(text, 7500), task_id: taskId || undefined });
+}
+const askClaudeSafe = (text, taskId) => askClaude(text, taskId).catch(e => { if (e && e.code === 'not_granted') state.caps.sample = null; toast(e && e.code === 'not_granted' ? 'Claude access wasn’t granted' : terr(e)); });
+
+/* ---- actions ---- */
+async function fileToPayload(f) {
+  const buf = new Uint8Array(await f.arrayBuffer());
+  try { return { content: new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(buf), encoding: 'utf8' }; }
+  catch { let bin = ''; for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000)); return { content: btoa(bin), encoding: 'base64' }; }
+}
+async function putFile(path, body, format, encoding, meta) {
+  const cur = team.files.find(f => f.path === path);
+  return tcall('write_file', { path, content: body, base_rev: cur ? cur.rev : 0, format, encoding, meta, message: 'Imported from Kitbash' }, { owner: true });
+}
+document.addEventListener('click', async e => {
+  const t = e.target.closest('[data-t]'); if (!t || state.tab !== 'team') return; const a = t.dataset.t; const id = +t.dataset.id;
+  switch (a) {
+    case 'refresh': team.status = 'idle'; if (state.caps.mcp) await teamRefresh(); else { team.status = 'none'; renderTeamHead(); renderTeamBody(); } break;
+    case 'sub': team.sub = t.dataset.k; renderTeamBody(); break;
+    case 'send': {
+      const text = ($('#t-draft').value || '').trim(); if (!text) return toast('Type a message first.');
+      const to = team.to, dest = to === 'both' ? 'all' : to;
+      await tdo('send', async () => {
+        await tcall('post_message', { to: dest, body: text }, { owner: true }); team.draft = ''; clearForm('t-draft');
+        await teamRefresh();
+        if (to === 'claude' || to === 'both') { if (state.caps.sample) await askClaudeSafe(text); else toast('Left in Claude’s inbox — it replies when it connects to the workspace'); }
+        if (to === 'openai-api' || to === 'both') { try { await tcall('run_agent', { instruction: text }, { owner: true }); } catch (err) { toast(terr(err)); } }
+        if (to === 'chatgpt') toast('Left in ChatGPT’s inbox');
+      }); await teamRefresh(); break;
+    }
+    case 'new-task': { const title = $('#tk-title').value.trim(); if (!title) return toast('Give the task a title.'); const files = $('#tk-files').value.split(',').map(s => s.trim()).filter(Boolean);
+      await tdo('task', async () => { await tcall('create_task', { title, assignee: $('#tk-asg').value || undefined, files }, { owner: true }); clearForm('tk-title', 'tk-files'); }); await teamRefresh(); break; }
+    case 'handoff': { const to = $(`[data-t="hand-sel"][data-id="${id}"]`).value; if (!to) return; await tdo('handoff', () => tcall('handoff_task', { id, to, note: 'Handed off from the Team tab' }, { owner: true })); await teamRefresh(); break; }
+    case 'run-task': { const task = team.tasks.find(x => x.id === id); await tdo('run', async () => { const r = await tcall('run_agent', { task_id: id, instruction: task ? task.title : undefined }, { owner: true }); toast(`OpenAI agent: ${r.applied} action(s) applied${r.rejected && r.rejected.length ? `, ${r.rejected.length} rejected` : ''}`); }); await teamRefresh(); break; }
+    case 'claude-task': { const task = team.tasks.find(x => x.id === id); await tdo('claude', () => askClaudeSafe(`Please work on task #${id}: ${task ? task.title : ''}`, id)); await teamRefresh(); break; }
+    case 'open-file': await tdo('open', async () => { team.openFile = await tcall('read_file', { path: t.dataset.path }); }); renderTeamBody(); break;
+    case 'share-part': { const s = state.skills[$('#tp-sel').value]; if (!s) return;
+      await tdo('share', async () => { const r = await putFile(`parts/${s.id}.json`, JSON.stringify(s, null, 2), 'kitbash/part', 'utf8', { project: s.project, kind: s.kind }); toast(`Shared as ${r.path} rev ${r.rev}`); }); await teamRefresh(); break; }
+    case 'checkpoint': await tdo('cp', async () => { const r = await tcall('create_checkpoint', { label: $('#tc-label').value.trim() || undefined }, { owner: true }); toast(`Checkpoint #${r.id} saved`); clearForm('tc-label'); }); await teamRefresh(); break;
+    case 'decide': await tdo('decide', async () => { const r = await tcall('decide_approval', { id, decision: t.dataset.d }, { owner: true }); toast(t.dataset.d === 'approve' ? (r && r.status === 'stale' ? 'That file changed since — request marked stale' : 'Approved') : 'Rejected'); }); await teamRefresh(); break;
+    case 'toggle-agent': await tdo('agent', () => tcall('set_agent_enabled', { id: t.dataset.id, enabled: t.dataset.on === '1' }, { owner: true })); await teamRefresh(); break;
+    case 'reg-agent': { const aid = $('#ta-id').value.trim().toLowerCase(); if (!aid) return toast('Give the agent an id.'); await tdo('reg', async () => { await tcall('register_agent', { id: aid, name: $('#ta-name').value.trim() || aid, kind: 'custom' }, { owner: true }); clearForm('ta-id', 'ta-name'); }); await teamRefresh(); break; }
+  }
+});
+document.addEventListener('change', async e => {
+  const t = e.target; if (state.tab !== 'team') return;
+  if (t.id === 't-key') { if (team.status !== 'ok') teamRefresh(); }
+  else if (t.id === 't-to') { team.to = t.value; team.draft = ($('#t-draft') || {}).value || ''; renderTeamBody(); }
+  else if (t.dataset.t === 'status') { await tdo('status', () => tcall('update_task', { id: +t.dataset.id, status: t.value }, { owner: true })); await teamRefresh(); }
+  else if (t.id === 'tf-files') {
+    const list = [...t.files]; t.value = ''; if (!list.length) return; const tag = ($('#tf-tag').value || '').trim();
+    await tdo('import', async () => {
+      let n = 0, bad = 0;
+      for (const f of list) {
+        try { const p = await fileToPayload(f); const path = `imports/${(f.webkitRelativePath || f.name).replace(/^\/+/, '')}`; const ext = (f.name.split('.').pop() || 'bin').toLowerCase();
+          await putFile(path, p.content, tag || `file/${ext}`, p.encoding, { original_name: f.name, original_size: f.size, imported_at: Date.now() }); n++;
+          const k = team.files.find(x => x.path === path); if (k) k.rev++; else team.files.push({ path, rev: 1 });
+        } catch (err) { bad++; toast(`${f.name}: ${terr(err)}`); }
+      }
+      toast(`Imported ${n} file${n === 1 ? '' : 's'}${bad ? `, ${bad} failed` : ''}`);
+    }); await teamRefresh();
+  }
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 't-key') { team.key = e.target.value; try { sessionStorage.setItem('kb-owner-key', team.key); } catch { /* ignore */ } }
+  else if (e.target.id === 't-draft') team.draft = e.target.value;
+});
+/* ================= app state ================= */
+const KIND = {
+  fn: ['FN', 'logic', 'Function'], component: ['UI', 'logic', 'Component'], class: ['CLS', 'logic', 'Class'], type: ['TYPE', 'logic', 'Type'], entry: ['MAIN', 'logic', 'Setup'],
+  data: ['DATA', 'data', 'Data'], shader: ['GLSL', 'data', 'Shader'], css: ['CSS', 'style', 'Style'], tokens: ['TOK', 'style', 'Tokens'], keyframes: ['ANIM', 'style', 'Motion'],
+  html: ['HTML', 'markup', 'Markup'], svg: ['SVG', 'markup', 'Graphic'], composite: ['KIT', 'build', 'Build'], skill: ['SKILL', 'build', 'Skill']
+};
+const GROUPS = [['all', 'All'], ['logic', 'Logic'], ['style', 'Style'], ['markup', 'Markup'], ['data', 'Data'], ['build', 'Builds']];
+const state = {
+  tab: 'import', skills: {}, packCounts: {}, index: buildIndex([]), q: '', group: 'all', sort: 'recent', open: null, confirm: null,
+  intake: 'folder', ws: [], busy: '',
+  build: { goal: SAMPLE_GOAL, pinned: new Set(), plan: null, result: null, view: 'preview', weaving: false, stream: '', abort: null },
+  caps: { sample: null, downloads: null, mcp: null }, editing: null
+};
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const all = () => Object.values(state.skills);
+const projLabel = p => (p === '_builds' ? 'Builds' : p === '_manual' ? 'Handmade' : p);
+const kindInfo = k => KIND[k] || ['?', 'logic', k];
+const ago = t => { const s = (Date.now() - t) / 1000; return s < 90 ? 'just now' : s < 5400 ? Math.round(s / 60) + 'm ago' : s < 129600 ? Math.round(s / 3600) + 'h ago' : Math.round(s / 86400) + 'd ago'; };
+const rebuild = () => { state.index = buildIndex(all()); };
+
+let toastTimer;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('on'), 2600); }
+async function copyText(text, ok = 'Copied') {
+  try { await navigator.clipboard.writeText(text); toast(ok); return; } catch { /* fall through */ }
+  const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select();
+  let done = false; try { done = document.execCommand('copy'); } catch { /* ignore */ } ta.remove(); toast(done ? ok : 'Copy blocked here — select the text and copy it');
+}
+async function saveFile(filename, data, okMsg) {
+  const dl = state.caps.downloads;
+  if (!dl) { if (typeof data === 'string') return copyText(data, 'Downloads aren’t available here — copied instead'); return toast('Downloads aren’t available in this view'); }
+  try { await dl.save({ filename, data }); toast(okMsg || 'Saved'); } catch (e) { if (e && e.code !== 'declined') toast('Couldn’t save: ' + (e.message || e.code)); }
+}
+
+/* ================= persistence ================= */
+let persistChain = Promise.resolve();
+function persist(project) {
+  persistChain = persistChain.then(async () => {
+    const mine = all().filter(s => s.project === project); const chunks = []; let cur = [], size = 0;
+    for (const s of mine) { const sz = JSON.stringify(s).length; if (size + sz > 150000 && cur.length) { chunks.push(cur); cur = []; size = 0; } cur.push(s); size += sz; }
+    if (cur.length) chunks.push(cur);
+    const base = `${slug(project)}-${hash(project)}`; const prev = state.packCounts[project] || 0;
+    try {
+      for (let i = 0; i < chunks.length; i++) await Backend.save(`${base}__${i}`, { project, i, skills: chunks[i] });
+      for (let i = chunks.length; i < prev; i++) await Backend.remove(`${base}__${i}`);
+      state.packCounts[project] = chunks.length;
+    } catch (e) { toast('Couldn’t save to the library: ' + (e.message || e.code || 'unknown error')); }
+    renderStatus();
+  });
+  return persistChain;
+}
+function renderStatus() {
+  const b = Backend.kind; const el = $('#status');
+  el.className = 'status ' + b; el.textContent = b === 'shared' ? 'Saved to library' : b === 'local' ? 'This browser only' : 'Not saved';
+  el.title = b === 'shared' ? 'Parts are stored with this page and survive reloads.' : b === 'local' ? 'Parts are kept in this browser only.' : 'Storage is unavailable — parts will be lost when you close the page.';
+  const n = all().length, p = new Set(all().map(s => s.project)).size;
+  $('#count').textContent = n ? `${n} part${n === 1 ? '' : 's'} · ${p} project${p === 1 ? '' : 's'}` : 'bin empty';
+}
+
+/* ================= shell ================= */
+const ICON = {
+  parts: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.2"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.2"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.2"/><path d="M13.5 17h7M17 13.5v7"/></svg>',
+  import: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5v11M7.5 10.5 12 15l4.5-4.5"/><path d="M4 15.5v3a1.5 1.5 0 0 0 1.5 1.5h13a1.5 1.5 0 0 0 1.5-1.5v-3"/></svg>',
+  build: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 20.5h17"/><rect x="5" y="12.5" width="5.5" height="8" rx="1"/><rect x="13" y="7.5" width="6" height="13" rx="1"/><path d="M7.7 9V4.5M6 6.2l1.7-1.7L9.4 6.2"/></svg>',
+  team: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8.5" cy="8.5" r="3"/><circle cx="16.5" cy="9.5" r="2.5"/><path d="M3 19c0-3 2.4-5 5.5-5s5.5 2 5.5 5M14.5 14.4c.6-.3 1.3-.4 2-.4 2.6 0 4.5 1.7 4.5 4.6"/></svg>',
+  search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>'
+};
+function shell() {
+  $('#root').innerHTML = `
+  <div class="app">
+    <header class="top">
+      <div class="brand"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="15" width="12" height="14" rx="2"/><rect x="17" y="6" width="12" height="9" rx="2"/><rect x="17" y="17" width="12" height="12" rx="2" class="alt"/><rect x="3" y="3" width="10" height="10" rx="2" class="alt"/></svg><span class="wordmark">Kitbash</span></div>
+      <div class="topmeta"><span id="count" class="count"></span><span id="status" class="status"></span></div>
+    </header>
+    <nav class="nav" aria-label="Sections">
+      ${[['import', 'Import'], ['parts', 'Parts'], ['build', 'Build'], ['team', 'Team']].map(([k, l]) => `<button data-act="tab" data-tab="${k}" id="nav-${k}">${ICON[k]}<span>${l}</span></button>`).join('')}
+    </nav>
+    <main id="view"></main>
+  </div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <div id="sheet" class="sheet" hidden></div>`;
+}
+function showTab(t) {
+  state.tab = t; $$('.nav button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  ({ parts: viewParts, import: viewImport, build: viewBuild, team: viewTeam })[t](); window.scrollTo(0, 0);
+}
+
+/* ================= PARTS ================= */
+function viewParts() {
+  $('#view').innerHTML = `
+  <section class="page">
+    <div class="toolbar">
+      <label class="search" for="q">${ICON.search}<input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Recall a part — “loop”, “card styles”, “stars”…" value="${esc(state.q)}"></label>
+      <button class="btn ghost" data-act="new">New part</button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="listhead" id="listhead"></div>
+    <div id="results"></div>
+  </section>`;
+  updateParts();
+}
+function updateParts() {
+  const q = state.q.trim(); let rows;
+  if (q) rows = recall(state.index, q, 80).filter((r, i) => r.rel >= 0.15 || i < 3); else {
+    const sorters = { recent: (a, b) => b.created - a.created, used: (a, b) => (b.hits || 0) - (a.hits || 0) || b.created - a.created, name: (a, b) => a.name.localeCompare(b.name) };
+    rows = all().sort(sorters[state.sort]).map(s => ({ s, rel: 0 }));
+  }
+  const counts = { all: rows.length }; for (const r of rows) { const g = kindInfo(r.s.kind)[1]; counts[g] = (counts[g] || 0) + 1; }
+  if (state.group !== 'all') rows = rows.filter(r => kindInfo(r.s.kind)[1] === state.group);
+  $('#chips').innerHTML = GROUPS.map(([k, l]) => `<button class="chip${state.group === k ? ' on' : ''}" data-act="group" data-g="${k}" ${counts[k] ? '' : 'disabled'}>${l}<i>${counts[k] || 0}</i></button>`).join('');
+  $('#listhead').innerHTML = all().length ? `<span>${q ? `${rows.length} recalled for “${esc(q)}”` : `${rows.length} part${rows.length === 1 ? '' : 's'}`}</span>
+    <span class="lh-actions">${q ? '' : `<select id="sort" aria-label="Sort parts"><option value="recent">Newest</option><option value="used">Most used</option><option value="name">A–Z</option></select>`}<button class="link" data-act="export">Export skills (.zip)</button></span>` : '';
+  if (!q && $('#sort')) $('#sort').value = state.sort;
+  const box = $('#results');
+  if (!all().length) { box.innerHTML = `<div class="empty"><h2>The bin is empty</h2><p>Import a project and Kitbash will lift its reusable pieces into parts you can recall instantly.</p><button class="btn" data-act="tab" data-tab="import">Import a project</button></div>`; return; }
+  if (!rows.length) { box.innerHTML = `<div class="empty"><h2>Nothing matches</h2><p>Try a broader word — Kitbash searches names, tags, summaries and the code itself.</p></div>`; return; }
+  box.innerHTML = rows.map(r => partCard(r)).join('');
+}
+function partCard({ s, rel }) {
+  const [lab, grp] = kindInfo(s.kind); const open = state.open === s.id;
+  const usedBy = all().filter(o => (o.uses || []).includes(s.id)).length;
+  const meta = [s.path ? `${projLabel(s.project)}/${s.path}:${s.line}` : projLabel(s.project), s.uses && s.uses.length ? `builds on ${s.uses.length}` : '', usedBy ? `needed by ${usedBy}` : '', s.hits ? `used ${s.hits}×` : ''].filter(Boolean).join(' · ');
+  return `<article class="part g-${grp}${open ? ' open' : ''}" data-id="${esc(s.id)}">
+    <button class="part-main" data-act="toggle" data-id="${esc(s.id)}" aria-expanded="${open}">
+      <span class="lab">${lab}</span>
+      <span class="pbody"><span class="nm">${esc(s.name)}</span><span class="sm">${esc(s.summary)}</span><span class="meta">${esc(meta)}</span></span>
+      ${rel ? `<span class="rel" title="Match strength"><i style="width:${Math.max(8, Math.round(rel * 100))}%"></i></span>` : ''}
+    </button>${open ? partDetail(s) : ''}</article>`;
+}
+function partDetail(s) {
+  const by = state.skills; const uses = (s.uses || []).map(id => by[id]).filter(Boolean);
+  const pinned = state.build.pinned.has(s.id); const sure = state.confirm === s.id;
+  return `<div class="detail">
+    ${s.tags.length ? `<div class="tags">${s.tags.map(t => `<span>${esc(t)}</span>`).join('')}</div>` : ''}
+    ${uses.length ? `<p class="builds">Builds on ${uses.map(u => `<button class="link" data-act="toggle" data-id="${esc(u.id)}" data-jump="1">${esc(u.name)}</button>`).join(', ')}</p>` : ''}
+    <pre class="code" tabindex="0"><code>${esc(s.code)}</code></pre>
+    <div class="actions">
+      <button class="btn small" data-act="pin" data-id="${esc(s.id)}">${pinned ? 'Pinned to Build ✓' : 'Add to Build'}</button>
+      <button class="btn small ghost" data-act="copy-md" data-id="${esc(s.id)}">Copy SKILL.md</button>
+      <button class="btn small ghost" data-act="copy-code" data-id="${esc(s.id)}">Copy code</button>
+      <button class="btn small ghost" data-act="edit" data-id="${esc(s.id)}">Edit</button>
+      <button class="btn small ${sure ? 'danger' : 'ghost'}" data-act="delete" data-id="${esc(s.id)}">${sure ? 'Tap again to delete' : 'Delete'}</button>
+    </div></div>`;
+}
+
+/* ---- new / edit sheet ---- */
+function openSheet(id) {
+  const s = id ? state.skills[id] : null; state.editing = id || null;
+  const sh = $('#sheet'); sh.hidden = false;
+  sh.innerHTML = `<div class="sheet-card" role="dialog" aria-modal="true" aria-label="${s ? 'Edit part' : 'New part'}">
+    <div class="sheet-head"><h2>${s ? 'Edit part' : 'New part'}</h2><button class="btn ghost small" data-act="sheet-close">Close</button></div>
+    <label for="f-name">Name</label><input id="f-name" value="${esc(s ? s.name : '')}" placeholder="fadeIn, card styles, hero markup…" autocomplete="off">
+    <div class="two"><div><label for="f-kind">Kind</label><select id="f-kind">${[['fn', 'Function'], ['component', 'Component'], ['class', 'Class'], ['data', 'Data / constants'], ['css', 'Styles'], ['html', 'Markup'], ['skill', 'Instructions (skill)']].map(([k, l]) => `<option value="${k}"${s && s.kind === k ? ' selected' : ''}>${l}</option>`).join('')}</select></div>
+    <div><label for="f-tags">Tags</label><input id="f-tags" value="${esc(s ? s.tags.join(', ') : '')}" placeholder="animation, canvas" autocomplete="off"></div></div>
+    <label for="f-summary">What it does and when to reach for it</label><textarea id="f-summary" rows="2" placeholder="One or two sentences a future build can search for.">${esc(s ? s.summary : '')}</textarea>
+    <label for="f-code">Code or instructions</label><textarea id="f-code" class="mono" rows="10" spellcheck="false" placeholder="Paste the code here">${esc(s ? s.code : '')}</textarea>
+    <div class="sheet-foot"><button class="btn" data-act="sheet-save">${s ? 'Save changes' : 'Add to bin'}</button></div></div>`;
+  setTimeout(() => $('#f-name').focus(), 30);
+}
+function saveSheet() {
+  const name = $('#f-name').value.trim(), code = $('#f-code').value; const kind = $('#f-kind').value;
+  if (!name || !code.trim()) return toast('A part needs a name and some code.');
+  const lang = { css: 'css', html: 'html', skill: 'md' }[kind] || 'js'; const old = state.editing ? state.skills[state.editing] : null;
+  const s = old ? { ...old } : { id: `${kind}-${slug(name).slice(0, 28)}-${hash('_manual|' + name + kind + Date.now())}`, project: '_manual', path: '', line: 1, hits: 0, created: Date.now(), origin: 'manual', provides: [], requires: [], uses: [], pkgs: [] };
+  Object.assign(s, { name, kind, lang, code: code.slice(0, 100000), summary: $('#f-summary').value.trim() || `${sentence(humanize(name))}.`, tags: $('#f-tags').value.split(',').map(t => t.trim().toLowerCase()).filter(Boolean).slice(0, 12) });
+  if (lang === 'js' && ['fn', 'class', 'component', 'data'].includes(kind)) s.provides = [name];
+  s.uses = autoUses(s); state.skills[s.id] = s; rebuild(); persist(s.project); renderStatus(); closeSheet(); state.open = s.id; toast(old ? 'Part updated' : 'Part added'); if (state.tab === 'parts') updateParts();
+}
+function autoUses(s) {
+  if (s.lang !== 'js') return s.uses || []; const ids = new Set(idents(s.code, s.name));
+  return all().filter(o => o.id !== s.id && o.lang === 'js' && o.provides[0] && o.provides[0].length >= 4 && ids.has(o.provides[0])).map(o => o.id);
+}
+function closeSheet() { const sh = $('#sheet'); sh.hidden = true; sh.innerHTML = ''; state.editing = null; }
+
+/* ---- export ---- */
+async function exportZip() {
+  const list = all(); if (!list.length) return; const byId = state.skills; const used = new Set(); const files = [];
+  for (const s of list) {
+    let dir = slug(s.name); while (used.has(dir)) dir += '-' + hash(s.id); used.add(dir);
+    files.push({ name: `${dir}/SKILL.md`, data: skillMd(s, byId) });
+    if (!['skill'].includes(s.kind)) files.push({ name: `${dir}/part.${EXT_OF[s.lang] || 'txt'}`, data: s.code });
+  }
+  files.unshift({ name: 'README.md', data: `# Kitbash skills\n\n${list.length} parts exported ${new Date().toISOString().slice(0, 10)}. Each folder holds a SKILL.md (what it is and when to use it) and the raw code.\n` });
+  await saveFile('kitbash-skills.zip', makeZip(files), 'Skills exported');
+}
+
+/* ================= IMPORT ================= */
+function viewImport() {
+  $('#view').innerHTML = `
+  <section class="page">
+    <div class="intro"><h1>Feed the bin</h1><p>Add a project. Kitbash reads every file, lifts out the reusable pieces — functions, components, styles, markup, shaders — and remembers each one as a mini skill you can recall later instead of rewriting.</p></div>
+    <div class="intake">
+      <div class="seg" role="tablist">${[['folder', 'Folder'], ['files', 'Files'], ['paste', 'Paste']].map(([k, l]) => `<button role="tab" data-act="intake" data-k="${k}" class="${state.intake === k ? 'on' : ''}" aria-selected="${state.intake === k}">${l}</button>`).join('')}</div>
+      <div id="intake-body"></div>
+    </div>
+    <div id="ws"></div>
+  </section>`;
+  renderIntake(); renderWorkspace();
+}
+function renderIntake() {
+  const b = $('#intake-body'); if (!b) return;
+  if (state.intake === 'folder') b.innerHTML = `<label class="drop" id="drop" for="in-folder"><strong>Choose a folder</strong><span>or drag one in — node_modules, .git and build output are skipped</span><input id="in-folder" type="file" webkitdirectory multiple hidden></label><p class="hint">Phones often can’t pick folders — use Files or Paste instead.</p>`;
+  else if (state.intake === 'files') b.innerHTML = `<label class="drop" id="drop" for="in-files"><strong>Choose files</strong><span>.js .ts .jsx .tsx .css .html .py .glsl .svg .json .md</span><input id="in-files" type="file" multiple hidden></label>`;
+  else b.innerHTML = `<div class="paste"><label for="p-name">File name</label><input id="p-name" value="snippet.js" autocomplete="off"><label for="p-text">Code</label><textarea id="p-text" class="mono" rows="7" spellcheck="false" placeholder="Paste a file’s contents"></textarea><button class="btn" data-act="paste-add">Read it</button></div>`;
+}
+
+async function ingest(files) {
+  files = [...files]; if (!files.length) return; state.busy = `Reading ${files.length} file${files.length === 1 ? '' : 's'}…`; renderWorkspace();
+  const groups = new Map();
+  for (const f of files) {
+    const rel = f.webkitRelativePath || f._rel || f.name; const segs = rel.split('/').filter(Boolean); const rooted = segs.length > 1;
+    const project = rooted ? segs[0] : (f._project || 'Loose files'); const path = rooted ? segs.slice(1).join('/') : rel;
+    if (!groups.has(project)) groups.set(project, { name: project, sample: false, files: [], skipped: [] });
+    const g = groups.get(project);
+    if (IGNORE_DIR.test('/' + path)) { g.skipped.push({ path, reason: 'ignored folder' }); continue; }
+    if (/\.min\.(js|css)$/.test(path)) { g.skipped.push({ path, reason: 'minified' }); continue; }
+    if (!fileLang(path)) { g.skipped.push({ path, reason: 'not code' }); continue; }
+    if (f.size > 400000) { g.skipped.push({ path, reason: 'over 400 KB' }); continue; }
+    try { g.files.push({ path, text: await f.text() }); } catch { g.skipped.push({ path, reason: 'unreadable' }); }
+  }
+  for (const g of groups.values()) addProject(g);
+  state.busy = ''; renderWorkspace();
+}
+function addProject(g) {
+  const cands = extractProject(g.name, g.files); const p = { ...g, cands, sel: new Set(cands.map(c => c.id)), open: false };
+  const i = state.ws.findIndex(x => x.name === g.name); if (i >= 0) state.ws[i] = p; else state.ws.unshift(p);
+}
+async function entriesToFiles(items) {
+  const out = [];
+  const walk = entry => new Promise(res => {
+    if (entry.isFile) entry.file(f => { f._rel = entry.fullPath.replace(/^\//, ''); out.push(f); res(); }, () => res());
+    else { const r = entry.createReader(); const all2 = []; const pull = () => r.readEntries(async es => { if (!es.length) { for (const e of all2) await walk(e); res(); } else { all2.push(...es); pull(); } }, () => res()); pull(); }
+  });
+  for (const it of items) { const e = it.webkitGetAsEntry && it.webkitGetAsEntry(); if (e) await walk(e); }
+  return out;
+}
+
+function treeText(p) {
+  const counts = {}; p.cands.forEach(c => { counts[c.path] = (counts[c.path] || 0) + 1; });
+  const paths = [...p.files.map(f => f.path), ...p.skipped.map(s => s.path)].sort(); const seen = new Set(); const lines = [];
+  const skipMap = Object.fromEntries(p.skipped.map(s => [s.path, s.reason]));
+  for (const path of paths) {
+    const segs = path.split('/');
+    for (let i = 0; i < segs.length - 1; i++) { const d = segs.slice(0, i + 1).join('/'); if (!seen.has(d)) { seen.add(d); lines.push('  '.repeat(i) + segs[i] + '/'); } }
+    lines.push('  '.repeat(segs.length - 1) + segs[segs.length - 1] + (skipMap[path] ? `  — skipped (${skipMap[path]})` : `  → ${counts[path] || 0} part${(counts[path] || 0) === 1 ? '' : 's'}`));
+  }
+  return lines.join('\n');
+}
+function renderWorkspace() {
+  const box = $('#ws'); if (!box) return;
+  const busy = state.busy ? `<div class="busy"><i></i>${esc(state.busy)}</div>` : '';
+  const next = state.next ? `<div class="next"><p><b>Stored.</b> Now put them to work: describe something new and Kitbash will recall these parts and assemble it.</p><button class="btn" data-act="try-build">Try it in Build →</button></div>` : '';
+  box.innerHTML = next + busy + state.ws.map((p, pi) => {
+    const byFile = new Map(); p.cands.forEach(c => { if (!byFile.has(c.path)) byFile.set(c.path, []); byFile.get(c.path).push(c); });
+    const n = p.sel.size; const known = p.cands.filter(c => state.skills[c.id]).length;
+    return `<section class="proj" data-pi="${pi}">
+      <header class="proj-head"><div><h2>${esc(p.name)}${p.sample ? '<span class="pill">Sample project</span>' : ''}</h2>
+      <p>${p.files.length} file${p.files.length === 1 ? '' : 's'} read · ${p.cands.length} part${p.cands.length === 1 ? '' : 's'} found${p.skipped.length ? ` · ${p.skipped.length} skipped` : ''}${known ? ` · ${known} already in bin` : ''}</p></div></header>
+      <details class="tree"><summary>Folder map</summary><pre>${esc(treeText(p))}</pre></details>
+      <div class="proj-actions">
+        <button class="btn" data-act="memorize" data-pi="${pi}" ${n ? '' : 'disabled'}>Memorize ${n} part${n === 1 ? '' : 's'}</button>
+        ${state.caps.sample ? `<button class="btn ghost" data-act="polish" data-pi="${pi}" ${p.polishing ? 'disabled' : ''}>${p.polishing ? esc(p.polishing) : 'Sharpen summaries with Claude'}</button>` : ''}
+        <button class="link" data-act="sel-all" data-pi="${pi}">${n === p.cands.length ? 'Select none' : 'Select all'}</button>
+      </div>
+      ${[...byFile].map(([path, cs]) => `<details class="file" ${cs.length <= 6 || p.sample ? 'open' : ''}><summary><span class="fp">${esc(path)}</span><i>${cs.length}</i></summary>
+        ${cs.map(c => { const [lab, grp] = kindInfo(c.kind); return `<label class="cand g-${grp}"><input type="checkbox" data-act="cand" data-pi="${pi}" data-id="${esc(c.id)}" ${p.sel.has(c.id) ? 'checked' : ''}><span class="lab">${lab}</span><span class="cbody"><b>${esc(c.name)}</b><span>${esc(c.summary)}</span>${c.uses.length ? `<em>builds on ${c.uses.map(u => esc((p.cands.find(x => x.id === u) || {}).name || '')).filter(Boolean).slice(0, 4).join(', ')}</em>` : ''}</span></label>`; }).join('')}
+      </details>`).join('') || '<p class="hint">No reusable parts found in these files.</p>'}
+    </section>`;
+  }).join('');
+}
+function memorize(pi) {
+  const p = state.ws[pi]; if (!p) return; let fresh = 0, upd = 0;
+  for (const c of p.cands) {
+    if (!p.sel.has(c.id)) continue; const old = state.skills[c.id];
+    if (old) { upd++; state.skills[c.id] = { ...c, hits: old.hits, created: old.created }; } else { fresh++; state.skills[c.id] = { ...c }; }
+  }
+  rebuild(); persist(p.name); renderStatus(); renderWorkspace();
+  toast(`Memorized ${fresh} new${upd ? `, refreshed ${upd}` : ''} · recall them in Parts`);
+  if (p.sample) { state.next = true; renderWorkspace(); }
+}
+
+async function polish(pi) {
+  const p = state.ws[pi]; const sample = state.caps.sample; if (!p || !sample || p.polishing) return;
+  const list = p.cands.filter(c => p.sel.has(c.id)); const size = 12; let done = 0;
+  try {
+    for (let i = 0; i < list.length; i += size) {
+      p.polishing = `Sharpening ${Math.min(i + size, list.length)}/${list.length}…`; renderWorkspace();
+      const batch = list.slice(i, i + size);
+      const prompt = `You label reusable code parts for a searchable library. For every part below write:\n- "summary": ONE sentence (max 140 characters) saying what it does and when someone would reach for it. Plain words, no code.\n- "tags": 3 to 6 lowercase single-word search terms a person might type.\nReturn only JSON: {"parts":[{"i":0,"summary":"...","tags":["..."]}]}\n\n` +
+        batch.map((c, k) => `### ${k}. ${c.name} (${c.kind}, ${c.lang})\n${c.code.slice(0, 700)}`).join('\n\n');
+      const res = await sample.json(prompt, { modelTier: 'quick', cache: false });
+      for (const r of (res && res.parts) || []) { const c = batch[r.i]; if (!c) continue; if (typeof r.summary === 'string' && r.summary.trim()) { c.summary = r.summary.trim().slice(0, 220); done++; } if (Array.isArray(r.tags)) c.tags = [...new Set([...r.tags.map(t => String(t).toLowerCase().slice(0, 24)), ...c.tags])].slice(0, 12); }
+    }
+    toast(`Sharpened ${done} summaries`);
+  } catch (e) { if (e && e.code === 'not_granted') { state.caps.sample = null; toast('Claude access wasn’t granted'); } else toast('Couldn’t reach Claude: ' + ((e && e.message) || 'try again')); }
+  p.polishing = ''; renderWorkspace();
+}
+
+/* ================= BUILD ================= */
+function viewBuild() {
+  $('#view').innerHTML = `
+  <section class="page">
+    <div class="intro"><h1>Build something bigger</h1><p>Describe what you want. Kitbash recalls the parts that fit, pulls in whatever they depend on, and assembles a working page — no starting from scratch.</p></div>
+    <label class="lbl" for="goal">What are you making?</label>
+    <textarea id="goal" rows="3" placeholder="A pulsing starfield with a title, a card grid that uses my theme…">${esc(state.build.goal)}</textarea>
+    <div class="row"><button class="btn" data-act="plan">Find parts</button><span class="hint" id="planhint"></span></div>
+    <div id="plan"></div>
+    <div id="result"></div>
+  </section>`;
+  renderPlan(); renderResult();
+}
+function planNow() {
+  const goal = $('#goal') ? $('#goal').value.trim() : state.build.goal; state.build.goal = goal;
+  if (!all().length) { state.build.plan = { items: [], empty: true }; return renderPlan(); }
+  const rows = recall(state.index, goal, 14); const items = rows.filter((r, i) => r.rel >= 0.2 || i < 3).slice(0, 10).map(r => ({ id: r.s.id, rel: r.rel, on: r.rel >= 0.3, pinned: false }));
+  for (const id of state.build.pinned) { const it = items.find(x => x.id === id); if (it) { it.on = true; it.pinned = true; } else if (state.skills[id]) items.unshift({ id, rel: 1, on: true, pinned: true }); }
+  // wiring code that ties the chosen parts together
+  const chosen = closure(items.filter(i => i.on).map(i => i.id), state.skills);
+  for (const s of all()) {
+    if (s.kind !== 'entry' || (s.uses || []).length < 2) continue;
+    const hit = s.uses.filter(u => chosen.includes(u)).length; if (hit / s.uses.length < 0.5) continue;
+    const ex = items.find(i => i.id === s.id);
+    if (ex) Object.assign(ex, { on: true, wiring: true }); else items.push({ id: s.id, rel: 0.5, on: true, pinned: false, wiring: true });
+  }
+  state.build.plan = { items }; state.build.result = null; renderPlan(); renderResult();
+}
+function checkedIds() { return state.build.plan ? state.build.plan.items.filter(i => i.on && state.skills[i.id]).map(i => i.id) : []; }
+function renderPlan() {
+  const box = $('#plan'); if (!box) return; const pl = state.build.plan;
+  if (!pl) { box.innerHTML = state.build.pinned.size ? `<p class="hint">${state.build.pinned.size} part${state.build.pinned.size === 1 ? '' : 's'} pinned from Parts.</p>` : ''; return; }
+  if (pl.empty) { box.innerHTML = `<div class="empty"><h2>Nothing to build from yet</h2><p>Memorize a project first — the sample in Import takes one tap.</p><button class="btn" data-act="tab" data-tab="import">Go to Import</button></div>`; return; }
+  const ids = checkedIds(); const asm = ids.length ? closure(ids, state.skills) : []; const pulled = asm.filter(id => !ids.includes(id));
+  box.innerHTML = `<div class="planhead"><h2>Recalled parts</h2><span>${ids.length} chosen${pulled.length ? ` + ${pulled.length} they depend on` : ''}</span></div>
+  <div class="plan">${pl.items.map((it, k) => { const s = state.skills[it.id]; if (!s) return ''; const [lab, grp] = kindInfo(s.kind);
+    return `<label class="cand g-${grp}"><input type="checkbox" data-act="plan-toggle" data-k="${k}" ${it.on ? 'checked' : ''}><span class="lab">${lab}</span><span class="cbody"><b>${esc(s.name)}${it.pinned ? '<span class="pill">pinned</span>' : ''}${it.wiring ? '<span class="pill">wires these together</span>' : ''}</b><span>${esc(s.summary)}</span><em>${esc(s.path ? projLabel(s.project) + '/' + s.path : projLabel(s.project))}</em></span><span class="rel"><i style="width:${Math.max(8, Math.round(it.rel * 100))}%"></i></span></label>`; }).join('') || '<p class="hint">No parts match that description. Try different words, or pin parts from the Parts tab.</p>'}</div>
+  ${pulled.length ? `<p class="deps"><b>Pulled in as dependencies:</b> ${pulled.map(id => esc(state.skills[id].name)).join(', ')}</p>` : ''}
+  <div class="row wrap"><button class="btn" data-act="assemble" ${ids.length ? '' : 'disabled'}>Assemble page</button>
+    ${state.caps.sample ? `<button class="btn ghost" data-act="weave" ${ids.length && !state.build.weaving ? '' : 'disabled'}>${state.build.weaving ? 'Weaving…' : 'Weave with Claude'}</button>` : ''}
+    ${state.build.weaving ? '<button class="link" data-act="stop">Stop</button>' : ''}</div>
+  <p class="hint">${state.caps.sample ? 'Assemble stitches the parts together exactly as stored. Weave lets Claude write the glue so they fit your goal.' : 'Assemble stitches the parts together exactly as stored.'}</p>`;
+}
+function bumpHits(ids) { const touched = new Set(); ids.forEach(id => { const s = state.skills[id]; if (s) { s.hits = (s.hits || 0) + 1; touched.add(s.project); } }); rebuild(); touched.forEach(persist); }
+
+function doAssemble() {
+  const ids = checkedIds(); if (!ids.length) return; const r = assemble(ids, state.skills, state.build.goal);
+  state.build.result = { html: r.html, notes: r.notes, order: r.order, how: 'assembled', ids }; state.build.view = 'preview'; bumpHits(r.order); renderResult();
+  requestAnimationFrame(() => { const el = $('#result'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+}
+function extractHtmlBlock(text) {
+  const m = /```html\s*\n([\s\S]*?)```/.exec(text) || /```\s*\n(<!doctype[\s\S]*?)```/i.exec(text); if (m) return m[1].trim() + '\n';
+  const open = /```html\s*\n([\s\S]*)$/.exec(text); if (open) return open[1].trim() + '\n';
+  const d = /<!doctype html[\s\S]*<\/html>/i.exec(text); return d ? d[0] + '\n' : '';
+}
+async function weave() {
+  const sample = state.caps.sample; const ids = checkedIds(); if (!sample || !ids.length || state.build.weaving) return;
+  const order = closure(ids, state.skills); let budget = 60000; const blocks = [];
+  for (const id of order) { const s = state.skills[id]; const code = s.code.length <= budget ? s.code : s.code.slice(0, 400) + '\n/* … truncated … */'; budget -= code.length; blocks.push(`### ${s.name} — ${s.kind}, ${s.lang}${s.path ? ` (from ${s.project}/${s.path})` : ''}\n${s.summary}\n\`\`\`${LANG_FENCE[s.lang] || ''}\n${code}\n\`\`\``); }
+  const prompt = `You are assembling a small, working single-file web page out of reusable parts the user already wrote and stored in their parts bin.\n\nGOAL: ${state.build.goal}\n\nRules:\n- Reuse the parts' code verbatim wherever it fits; keep their names. Drop parts that don't serve the goal.\n- Add only the glue needed: wiring, markup, small tweaks so the parts work together and match the goal.\n- Strip ES-module import/export syntax (everything lives in one file).\n- One HTML file, all CSS and JS inline. No external requests except cdnjs.cloudflare.com if a part needs React or three.js.\n- Reply with a single \`\`\`html code block and one short sentence after it saying what you changed.\n\nPARTS:\n\n${blocks.join('\n\n')}`;
+  const ac = new AbortController(); Object.assign(state.build, { weaving: true, abort: ac, stream: '', view: 'code', result: { html: '', notes: [], order, how: 'weaving', ids } }); renderPlan(); renderResult();
+  try {
+    const res = await sample(prompt, { signal: ac.signal, modelTier: 'complex', cache: false, onText: ({ text }) => { state.build.stream = text; const c = $('#stream'); if (c) { c.textContent = extractHtmlBlock(text) || text; c.scrollTop = c.scrollHeight; } } });
+    const html = extractHtmlBlock(res.text); const notes = [];
+    if (!html) notes.push('Claude’s reply had no HTML block — nothing to preview.'); if (res.truncated) notes.push('The reply was cut off; the page may be incomplete.');
+    const tail = res.text.split('```').pop().trim(); if (tail && html) notes.push('Claude: ' + tail.slice(0, 300));
+    state.build.result = { html, notes, order, how: 'woven', ids }; state.build.view = html ? 'preview' : 'notes'; if (html) bumpHits(order);
+  } catch (e) {
+    const partial = e && e.text ? extractHtmlBlock(e.text) : '';
+    if (e && e.code === 'cancelled') toast('Stopped'); else if (e && e.code === 'not_granted') { state.caps.sample = null; toast('Claude access wasn’t granted'); } else toast('Claude couldn’t finish: ' + ((e && e.message) || 'try again'));
+    state.build.result = partial ? { html: partial, notes: ['Stopped early — partial page.'], order, how: 'partial', ids } : null;
+  }
+  state.build.weaving = false; renderPlan(); renderResult();
+}
+function renderResult() {
+  const box = $('#result'); if (!box) return; const r = state.build.result; if (!r) { box.innerHTML = ''; return; }
+  const v = state.build.view; const lines = r.html ? r.html.split('\n').length : 0;
+  const tabs = [['preview', 'Preview'], ['code', 'Code'], ['notes', `Notes${r.notes.length ? ` (${r.notes.length})` : ''}`]];
+  box.innerHTML = `<div class="planhead"><h2>${r.how === 'weaving' ? 'Weaving…' : r.how === 'woven' ? 'Woven by Claude' : r.how === 'partial' ? 'Partial build' : 'Assembled'}</h2><span>${r.order.length} part${r.order.length === 1 ? '' : 's'}${lines ? ` · ${lines} lines` : ''}</span></div>
+  <div class="seg small" role="tablist">${tabs.map(([k, l]) => `<button role="tab" data-act="rview" data-k="${k}" class="${v === k ? 'on' : ''}" aria-selected="${v === k}">${l}</button>`).join('')}</div>
+  <div class="resbody">${v === 'preview' ? (r.html ? '<iframe id="pv" title="Build preview" sandbox="allow-scripts"></iframe>' : '<p class="hint pad">Nothing to preview yet.</p>')
+      : v === 'code' ? `<pre class="code big" id="stream" tabindex="0">${esc(r.how === 'weaving' ? (extractHtmlBlock(state.build.stream) || state.build.stream || 'Waiting for Claude…') : r.html)}</pre>`
+        : `<ul class="notes">${r.notes.length ? r.notes.map(n => `<li>${esc(n)}</li>`).join('') : '<li>No warnings.</li>'}<li>Parts used: ${r.order.map(id => esc((state.skills[id] || {}).name || id)).join(' → ')}</li></ul>`}</div>
+  ${r.html && r.how !== 'weaving' ? `<div class="row wrap"><button class="btn" data-act="save-build">Save as a new part</button><button class="btn ghost" data-act="dl-build">Download .html</button><button class="btn ghost" data-act="copy-build">Copy code</button></div>
+  <p class="hint">Saving turns this build into a part of its own — later builds can start from it.</p>` : ''}`;
+  if (v === 'preview' && r.html) $('#pv').srcdoc = r.html;
+}
+function saveBuild() {
+  const r = state.build.result; if (!r || !r.html) return; const goal = state.build.goal || 'Untitled build';
+  const s = { id: `composite-${slug(goal).slice(0, 28)}-${hash(goal + Date.now())}`, name: sentence(goal).slice(0, 60), kind: 'composite', lang: 'html', code: r.html.slice(0, 100000), project: '_builds', path: '', line: 1,
+    summary: `Finished build (${r.how}) from ${r.order.length} parts for: ${goal.slice(0, 120)}`, tags: ['build', 'project', 'composite', ...tok(goal)].slice(0, 12), provides: [], requires: [], uses: r.order.slice(), pkgs: [], hits: 0, created: Date.now(), origin: 'build' };
+  state.skills[s.id] = s; rebuild(); persist('_builds'); renderStatus(); toast('Saved to Parts as a build — ready to reuse');
+}
+
+/* ================= events ================= */
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if (!t) return; const act = t.dataset.act; const id = t.dataset.id;
+  switch (act) {
+    case 'tab': showTab(t.dataset.tab); break;
+    case 'group': state.group = t.dataset.g; updateParts(); break;
+    case 'toggle': state.open = state.open === id && !t.dataset.jump ? null : id; state.confirm = null; if (t.dataset.jump) { state.q = ''; state.group = 'all'; if (state.tab === 'parts') viewParts(); } updateParts(); if (t.dataset.jump) setTimeout(() => { const el = document.querySelector(`.part[data-id="${CSS.escape(id)}"]`); if (el) el.scrollIntoView({ block: 'center' }); }, 30); break;
+    case 'pin': state.build.pinned.has(id) ? state.build.pinned.delete(id) : state.build.pinned.add(id); toast(state.build.pinned.has(id) ? 'Pinned — it will be included in your next build' : 'Unpinned'); updateParts(); break;
+    case 'copy-md': copyText(skillMd(state.skills[id], state.skills), 'SKILL.md copied'); break;
+    case 'copy-code': copyText(state.skills[id].code, 'Code copied'); break;
+    case 'edit': openSheet(id); break;
+    case 'delete': if (state.confirm === id) { const p = state.skills[id].project; delete state.skills[id]; state.confirm = null; state.open = null; rebuild(); persist(p); renderStatus(); toast('Deleted'); } else state.confirm = id; updateParts(); break;
+    case 'new': openSheet(null); break;
+    case 'sheet-close': closeSheet(); break;
+    case 'sheet-save': saveSheet(); break;
+    case 'export': exportZip(); break;
+    case 'intake': state.intake = t.dataset.k; viewImport(); break;
+    case 'paste-add': { const name = $('#p-name').value.trim() || 'snippet.js'; const text = $('#p-text').value; if (!text.trim()) return toast('Paste some code first.'); if (!fileLang(name)) return toast('Give the file a name with an extension, like .js or .css'); const g = { name: 'Pasted', sample: false, files: [{ path: name, text }], skipped: [] }; const ex = state.ws.find(x => x.name === 'Pasted'); if (ex) g.files.unshift(...ex.files.filter(f => f.path !== name)); addProject(g); renderWorkspace(); break; }
+    case 'memorize': memorize(+t.dataset.pi); break;
+    case 'sel-all': { const p = state.ws[+t.dataset.pi]; if (p.sel.size === p.cands.length) p.sel.clear(); else p.cands.forEach(c => p.sel.add(c.id)); renderWorkspace(); break; }
+    case 'polish': polish(+t.dataset.pi); break;
+    case 'try-build': state.build.goal = SAMPLE_GOAL; state.build.plan = null; state.build.result = null; showTab('build'); planNow(); break;
+    case 'plan': planNow(); break;
+    case 'assemble': doAssemble(); break;
+    case 'weave': weave(); break;
+    case 'stop': if (state.build.abort) state.build.abort.abort(); break;
+    case 'rview': state.build.view = t.dataset.k; renderResult(); break;
+    case 'save-build': saveBuild(); break;
+    case 'dl-build': saveFile('kitbash-build.html', state.build.result.html, 'Build saved'); break;
+    case 'copy-build': copyText(state.build.result.html, 'Code copied'); break;
+  }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.id === 'in-folder' || t.id === 'in-files') { ingest(t.files); t.value = ''; }
+  else if (t.id === 'sort') { state.sort = t.value; updateParts(); }
+  else if (t.dataset.act === 'cand') { const p = state.ws[+t.dataset.pi]; t.checked ? p.sel.add(t.dataset.id) : p.sel.delete(t.dataset.id); const b = $(`[data-act="memorize"][data-pi="${t.dataset.pi}"]`); if (b) { b.disabled = !p.sel.size; b.textContent = `Memorize ${p.sel.size} part${p.sel.size === 1 ? '' : 's'}`; } }
+  else if (t.dataset.act === 'plan-toggle') { state.build.plan.items[+t.dataset.k].on = t.checked; renderPlan(); }
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 'q') { state.q = e.target.value; updateParts(); }
+  else if (e.target.id === 'goal') state.build.goal = e.target.value;
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#sheet').hidden) closeSheet(); });
+document.addEventListener('dragover', e => { if ($('#drop')) { e.preventDefault(); $('#drop').classList.add('over'); } });
+document.addEventListener('dragleave', e => { if ($('#drop') && !e.relatedTarget) $('#drop').classList.remove('over'); });
+document.addEventListener('drop', async e => {
+  const d = $('#drop'); if (!d) return; e.preventDefault(); d.classList.remove('over');
+  const items = e.dataTransfer && e.dataTransfer.items ? [...e.dataTransfer.items] : [];
+  const files = items.length && items[0].webkitGetAsEntry ? await entriesToFiles(items) : [...e.dataTransfer.files]; ingest(files);
+});
+
+/* ================= boot ================= */
+async function boot() {
+  shell(); renderStatus();
+  addProject({ name: 'starfield', sample: true, files: SAMPLE_FILES.filter(f => !f.skip).map(f => ({ path: f.path, text: f.text })), skipped: SAMPLE_FILES.filter(f => f.skip).map(f => ({ path: f.path, reason: f.skip })) });
+  showTab('import');
+  const [rows, sample, dl, mcp] = await Promise.all([Backend.init(), cap('sample'), cap('downloads'), cap('mcp')]);
+  state.caps.sample = sample; state.caps.downloads = dl; state.caps.mcp = mcp;
+  if (!state.caps.mcp && document.querySelector('meta[name="kitbash-server"]')) { state.caps.mcp = teamServerMcp(); team.standalone = true; }   // served by its own workspace server
+  if (state.tab === 'team' && team.status !== 'ok') { team.status = 'idle'; viewTeam(); }
+  for (const r of rows) { const d = r.data || {}; if (!d.project || !Array.isArray(d.skills)) continue; state.packCounts[d.project] = Math.max(state.packCounts[d.project] || 0, (d.i || 0) + 1); for (const s of d.skills) state.skills[s.id] = s; }
+  rebuild(); renderStatus();
+  const known = state.ws[0] && state.ws[0].cands.filter(c => state.skills[c.id]).length; if (state.tab === 'import') renderWorkspace(); else if (state.tab === 'build') renderPlan();
+  if (all().length && known !== undefined && state.tab === 'import' && !state.ws.some(w => !w.sample)) showTab('parts');
+}
+boot();
+</script>

@@ -1,0 +1,20 @@
+{
+  "name": "kitbash-workspace",
+  "version": "0.2.0",
+  "description": "Kitbash: memorize code into reusable parts, plus a shared workspace (files, revisions, tasks, approvals) for Claude, ChatGPT and other agents over MCP.",
+  "private": true,
+  "type": "module",
+  "main": "server.js",
+  "engines": { "node": ">=22.13.0" },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server.js",
+    "dev": "node --disable-warning=ExperimentalWarning --watch server.js",
+    "build:app": "bash app/build.sh",
+    "test": "node test/e2e.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "express": "^5.2.1",
+    "zod": "^4.6.5"
+  }
+}
